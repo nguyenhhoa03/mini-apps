@@ -7,6 +7,7 @@ import zipfile
 import tempfile
 import shutil
 from tkinter import messagebox
+import webbrowser  # Thêm import webbrowser
 
 # Sử dụng chế độ giao diện theo hệ thống (sáng/tối tự động)
 ctk.set_appearance_mode("System")
@@ -44,12 +45,22 @@ def show_about():
     about_window = ctk.CTkToplevel(root)
     about_window.title("About Launcher")
     about_window.geometry("300x200")
-    about_label = ctk.CTkLabel(
-        about_window,
-        text="Python Launcher v1.0\n\nTìm hiểu thêm tại https://github.com/nguyenhhoa03/mini-apps\n\nMake with love",
-        justify="center"
-    )
-    about_label.pack(expand=True, padx=20, pady=20)
+    
+    # Tạo tiêu đề
+    header = ctk.CTkLabel(about_window, text="Python Launcher v1.0", justify="center")
+    header.pack(pady=(20, 5))
+    
+    # Tạo label cho link Github với kiểu chữ gạch chân và màu xanh
+    link_label = ctk.CTkLabel(about_window, text="Tìm hiểu thêm tại Github", justify="center", text_color="blue")
+    link_label.configure(font=("Helvetica", 10, "underline"))
+    link_label.pack()
+    # Bind sự kiện click vào label để mở URL bằng thư viện webbrowser
+    link_label.bind("<Button-1>", lambda e: webbrowser.open("https://github.com/nguyenhhoa03/mini-apps"))
+    
+    # Tạo footer
+    footer = ctk.CTkLabel(about_window, text="Make with love", justify="center")
+    footer.pack(pady=(5, 20))
+    
     about_window.lift()
     about_window.focus_force()
 
