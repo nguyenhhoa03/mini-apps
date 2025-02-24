@@ -50,7 +50,7 @@ def show_about():
     about_window.geometry("300x200")
     about_label = ctk.CTkLabel(
         about_window,
-        text="Python Launcher v1.0\n\nĐược phát triển để chạy các script CLI Python\n\n© 2025 YourName",
+        text="Python Launcher v1.0\n\nTìm hiểu thêm tại https://github.com/nguyenhhoa03/mini-apps\n\nMake with love",
         justify="center"
     )
     about_label.pack(expand=True, padx=20, pady=20)
