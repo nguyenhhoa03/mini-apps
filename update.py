@@ -15,30 +15,63 @@ app.geometry("400x200")
 status_label = ctk.CTkLabel(app, text="Đang cài đặt các thư viện cần thiết...")
 status_label.pack(pady=20)
 
-# Progressbar để hiển thị tiến trình cài đặt
+# Thanh progressbar để hiển thị tiến trình cài đặt
 progressbar = ctk.CTkProgressBar(app, width=300)
 progressbar.pack(pady=10)
 progressbar.set(0)
 
-# Danh sách các thư viện cần cài đặt
-packages = ["customtkinter", "tkinter", "yt_dlp"]
+def install_and_configure():
+    # Danh sách các thư viện cần cài đặt qua pip
+    pip_packages = ["customtkinter", "tkinter", "yt_dlp"]
 
-def install_packages():
-    total = len(packages)
-    for index, pkg in enumerate(packages):
+    # Xác định các lệnh hệ thống bổ sung cho cấu hình,
+    # Lưu ý: Một số lệnh này có thể không dùng được pip, hãy thay đổi theo nhu cầu.
+    if os.name == "nt":
+        # Các lệnh dành cho Windows
+        additional_commands = [
+            'echo Đang thực hiện cấu hình cho Windows',
+            # Thêm các lệnh khác, ví dụ:
+            # 'choco install package-name',
+        ]
+    elif os.name == "posix":
+        # Các lệnh dành cho Linux
+        additional_commands = [
+            'echo Đang thực hiện cấu hình cho Linux',
+            'neofetch',
+            # Thêm các lệnh khác, ví dụ:
+            # 'sudo apt-get update',
+            # 'sudo apt-get install package-name',
+        ]
+    else:
+        additional_commands = []
+
+    total_steps = len(pip_packages) + len(additional_commands)
+    current_step = 0
+
+    # Cài đặt các thư viện qua pip
+    for pkg in pip_packages:
         status_label.configure(text=f"Đang cài đặt {pkg}...")
         app.update()
-        # Sử dụng os.system để gọi pip cài đặt thư viện
         os.system(f"pip install {pkg}")
-        # Cập nhật progressbar
-        progressbar.set((index + 1) / total)
+        current_step += 1
+        progressbar.set(current_step / total_steps)
         app.update()
-        time.sleep(0.5)  # Tạm dừng ngắn để người dùng thấy được tiến trình
+        time.sleep(0.5)
+
+    # Thực hiện các lệnh hệ thống bổ sung (cấu hình)
+    for cmd in additional_commands:
+        status_label.configure(text=f"Thực hiện lệnh: {cmd}")
+        app.update()
+        os.system(cmd)
+        current_step += 1
+        progressbar.set(current_step / total_steps)
+        app.update()
+        time.sleep(0.5)
+
     status_label.configure(text="Cài đặt hoàn tất!")
-    # Nút đóng cửa sổ sau khi cài đặt xong
     close_button = ctk.CTkButton(app, text="Đóng", command=app.destroy)
     close_button.pack(pady=10)
 
-# Sau 100ms, bắt đầu cài đặt
-app.after(100, install_packages)
+# Sau 100ms, bắt đầu tiến trình cài đặt và cấu hình
+app.after(100, install_and_configure)
 app.mainloop()
