@@ -133,17 +133,24 @@ update_button.pack(side="right", padx=5)
 launcher_frame = ctk.CTkFrame(root)
 launcher_frame.pack(padx=20, pady=20, fill="both", expand=True)
 
-# Quét các file .py theo định dạng "ten-script-python.py" (loại trừ file launcher hiện tại)
-current_file = os.path.basename(__file__)
+# Đường dẫn tới thư mục chứa các script (chỉ chứa các file app)
+scripts_dir = os.path.join(os.getcwd(), "scripts")
+
+# Quét các file .py theo định dạng "ten-script-python.py" trong thư mục scripts
 script_files = []
-for file in os.listdir("."):
-    if file.endswith(".py") and file != current_file and "-" in file:
-        script_files.append(file)
-script_files.sort()
+if os.path.exists(scripts_dir):
+    for file in os.listdir(scripts_dir):
+        if file.endswith(".py") and "-" in file:
+            # Lưu đường dẫn tương đối (ví dụ: "scripts/ten-script-python.py")
+            script_files.append(os.path.join("scripts", file))
+    script_files.sort()
+else:
+    messagebox.showerror("Error", f"Thư mục '{scripts_dir}' không tồn tại.")
 
 # Tạo nút cho từng script
 for index, script in enumerate(script_files):
-    base_name = script[:-3]  # Loại bỏ đuôi ".py"
+    script_name = os.path.basename(script)  # Lấy tên file không kèm đường dẫn
+    base_name = script_name[:-3]  # Loại bỏ đuôi ".py"
     display_name = base_name.replace("-", " ").title()  # Thay "-" bằng khoảng trắng và in hoa chữ cái đầu
     icon_path = os.path.join("icons", base_name + ".png")
     if os.path.exists(icon_path):
