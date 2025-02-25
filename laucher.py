@@ -65,7 +65,7 @@ def show_about():
     about_window.focus_force()
 
 def update_project():
-    """Cập nhật dự án từ GitHub và thay thế toàn bộ file hiện tại."""
+    """Cập nhật dự án từ GitHub, copy file mới vào thư mục hiện tại và chạy file update.py để cấu hình."""
     answer = messagebox.askyesno("Update", "Quá trình update sẽ tải về phiên bản mới và cập nhật dự án.\nBạn có muốn tiếp tục không?")
     if not answer:
         return
@@ -104,12 +104,18 @@ def update_project():
             s = os.path.join(extracted_dir, item)
             d = os.path.join(current_dir, item)
             if os.path.isdir(s):
-                # Sử dụng copytree với dirs_exist_ok=True để ghi đè nếu thư mục đã tồn tại
                 shutil.copytree(s, d, dirs_exist_ok=True)
             else:
                 shutil.copy2(s, d)
 
-        messagebox.showinfo("Update", "Cập nhật thành công. Vui lòng khởi động lại Launcher để áp dụng thay đổi.")
+        # Sau khi cập nhật file, chạy file update.py để cấu hình
+        try:
+            subprocess.Popen(["python", "update.py"])
+        except Exception as e:
+            messagebox.showerror("Error", f"Đã xảy ra lỗi khi chạy update.py: {e}")
+            return
+
+        messagebox.showinfo("Update", "Cập nhật thành công và cấu hình đã được cập nhật.\nVui lòng khởi động lại Launcher để áp dụng thay đổi.")
     except Exception as e:
         messagebox.showerror("Error", f"Đã xảy ra lỗi khi cập nhật: {e}")
 
