@@ -37,7 +37,6 @@ def install_and_configure():
         # Các lệnh dành cho Linux
         additional_commands = [
             'echo Đang thực hiện cấu hình cho Linux',
-            'neofetch',
             # Thêm các lệnh khác, ví dụ:
             # 'sudo apt-get update',
             # 'sudo apt-get install package-name',
