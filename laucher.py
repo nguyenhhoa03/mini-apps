@@ -15,7 +15,7 @@ ctk.set_default_color_theme("blue")
 
 # Tạo cửa sổ chính với kích thước tối thiểu
 root = ctk.CTk()
-root.title("Python Launcher")
+root.title("Mini apps Launcher")
 root.geometry("600x400")
 root.minsize(600, 400)
 
