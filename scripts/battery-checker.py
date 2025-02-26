@@ -2,7 +2,9 @@ import re
 import os
 import sys
 import subprocess
+import customtkinter as ctk
 
+# Hàm trích xuất thông tin pin từ báo cáo Windows (battery-report.html)
 def extract_battery_capacities_windows(file_path):
     """
     Trích xuất thông tin DESIGN CAPACITY và FULL CHARGE CAPACITY từ báo cáo pin trên Windows.
@@ -37,6 +39,7 @@ def extract_battery_capacities_windows(file_path):
         print("Không tìm thấy thông tin pin trong báo cáo.")
     return batteries
 
+# Hàm tính toán tình trạng pin trên Windows
 def calculate_battery_health_windows(batteries):
     """
     Tính toán tình trạng pin cho Windows.
@@ -51,6 +54,7 @@ def calculate_battery_health_windows(batteries):
             print(f"Pin {idx}: DESIGN CAPACITY không hợp lệ.")
     return results
 
+# Hàm trích xuất thông tin pin trên Linux sử dụng upower
 def extract_battery_capacities_linux():
     """
     Sử dụng lệnh upower để lấy thông tin pin trên Linux.
@@ -61,7 +65,7 @@ def extract_battery_capacities_linux():
     try:
         # Chạy lệnh upower và thu kết quả
         result = subprocess.run("upower -i $(upower -e | grep BAT)", shell=True, check=True,
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         output = result.stdout
     except Exception as e:
         print("Lỗi khi chạy upower:", e)
@@ -87,84 +91,66 @@ def extract_battery_capacities_linux():
         print("Không tìm thấy thông tin pin từ upower.")
         return []
 
-def create_and_run_vbs(battery_health, temp_vbs_path):
-    """
-    Dành cho Windows: Tạo file VBScript tạm thời để hiển thị thông báo tình trạng pin (MsgBox).
-    """
-    msg_lines = []
-    for idx, design, full, health in battery_health:
-        line = f"Pin {idx}: DESIGN = {design} mWh, FULL = {full} mWh, Health = {health:.2f}%"
-        msg_lines.append(line)
-    # Nối các dòng với ký tự xuống dòng của VBScript (vbCrLf)
-    vbs_message = ' & vbCrLf & '.join([f'"{line}"' for line in msg_lines])
-    vbs_content = f'MsgBox {vbs_message}'
+# Lớp giao diện chính sử dụng customtkinter
+class BatteryApp(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.title("Battery Health Monitor")
+        self.geometry("600x400")
+        
+        # Label tiêu đề
+        self.title_label = ctk.CTkLabel(self, text="Battery Health Monitor", font=("Arial", 20))
+        self.title_label.pack(pady=20)
+        
+        # Text box để hiển thị thông tin pin
+        self.text_box = ctk.CTkTextbox(self, width=550, height=250)
+        self.text_box.pack(pady=10)
+        
+        # Nút refresh để cập nhật thông tin
+        self.refresh_button = ctk.CTkButton(self, text="Refresh", command=self.refresh_data)
+        self.refresh_button.pack(pady=10)
+        
+        # Tải dữ liệu ban đầu
+        self.refresh_data()
     
-    try:
-        with open(temp_vbs_path, "w", encoding="utf-8") as vbs_file:
-            vbs_file.write(vbs_content)
-    except Exception as e:
-        print(f"Lỗi khi tạo file VBS: {e}")
-        return
-    
-    os.system(f"wscript \"{temp_vbs_path}\"")
-
-def notify_battery_status(battery_health):
-    """
-    Hiển thị thông báo tình trạng pin.
-    - Trên Windows: dùng VBScript (MsgBox)
-    - Trên Linux: dùng notify-send (nếu có cài đặt)
-    """
-    if os.name == "nt":
-        current_directory = os.path.expanduser("~")
-        temp_vbs_file = os.path.join(current_directory, "temp_battery_status.vbs")
-        create_and_run_vbs(battery_health, temp_vbs_file)
-    else:
-        # Tạo thông báo dạng text
-        msg = "\n".join(
-            f"Pin {idx}: DESIGN = {design} Wh, FULL = {full} Wh, Health = {health:.2f}%"
-            for idx, design, full, health in battery_health
-        )
-        # Gọi notify-send để hiển thị thông báo (Linux)
-        os.system(f'notify-send "Tình trạng pin" "{msg}"')
-
-def print_battery_status(battery_health):
-    """
-    In ra thông tin tình trạng pin trên terminal.
-    """
-    for idx, design, full, health in battery_health:
-        print(f"Pin {idx}:")
-        print(f"  DESIGN CAPACITY      = {design} {'mWh' if os.name=='nt' else 'Wh'}")
-        print(f"  FULL CHARGE CAPACITY = {full} {'mWh' if os.name=='nt' else 'Wh'}")
-        print(f"  Health               = {health:.2f}%")
-        print("-" * 40)
+    def refresh_data(self):
+        self.text_box.delete("1.0", "end")
+        battery_health = []
+        
+        if os.name == "nt":
+            # Windows: tạo báo cáo pin và trích xuất thông tin
+            os.system("powercfg /batteryreport")
+            current_directory = os.path.expanduser("~")
+            file_path = os.path.join(current_directory, "battery-report.html")
+            battery_data = extract_battery_capacities_windows(file_path)
+            if battery_data:
+                battery_health = calculate_battery_health_windows(battery_data)
+            else:
+                self.text_box.insert("end", "Không thể trích xuất thông tin pin từ báo cáo.\n")
+        elif sys.platform.startswith("linux"):
+            # Linux: sử dụng upower để lấy thông tin pin
+            battery_data = extract_battery_capacities_linux()
+            if battery_data:
+                battery_health = [(idx, design, full, health) 
+                                  for idx, (design, full, health) in enumerate(battery_data, start=1)]
+            else:
+                self.text_box.insert("end", "Không thể trích xuất thông tin pin từ upower.\n")
+        else:
+            self.text_box.insert("end", "Hệ điều hành không được hỗ trợ.\n")
+            return
+        
+        # Hiển thị dữ liệu pin lên text box
+        if battery_health:
+            for idx, design, full, health in battery_health:
+                self.text_box.insert("end", f"Pin {idx}:\n")
+                unit = "mWh" if os.name == "nt" else "Wh"
+                self.text_box.insert("end", f"  DESIGN CAPACITY      = {design} {unit}\n")
+                self.text_box.insert("end", f"  FULL CHARGE CAPACITY = {full} {unit}\n")
+                self.text_box.insert("end", f"  Health               = {health:.2f}%\n")
+                self.text_box.insert("end", "-" * 40 + "\n")
+        else:
+            self.text_box.insert("end", "Không có dữ liệu pin để hiển thị.\n")
 
 if __name__ == "__main__":
-    battery_health = []
-    if os.name == "nt":
-        # Windows: tạo báo cáo pin và trích xuất thông tin
-        os.system("powercfg /batteryreport")
-        current_directory = os.path.expanduser("~")
-        file_path = os.path.join(current_directory, "battery-report.html")
-        battery_data = extract_battery_capacities_windows(file_path)
-        if battery_data:
-            battery_health = calculate_battery_health_windows(battery_data)
-        else:
-            print("Không thể trích xuất thông tin pin từ báo cáo.")
-    elif sys.platform.startswith("linux"):
-        # Linux: sử dụng upower để lấy thông tin pin
-        battery_data = extract_battery_capacities_linux()
-        if battery_data:
-            # battery_data đã là list các tuple (design, full, health)
-            battery_health = [(idx, design, full, health) 
-                              for idx, (design, full, health) in enumerate(battery_data, start=1)]
-        else:
-            print("Không thể trích xuất thông tin pin từ upower.")
-    else:
-        print("Hệ điều hành không được hỗ trợ.")
-        sys.exit(1)
-    
-    if battery_health:
-        print_battery_status(battery_health)
-        notify_battery_status(battery_health)
-    else:
-        print("Không có dữ liệu pin để hiển thị.")
+    app = BatteryApp()
+    app.mainloop()
