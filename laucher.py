@@ -7,7 +7,7 @@ import zipfile
 import tempfile
 import shutil
 from tkinter import messagebox
-import webbrowser  # Thêm import webbrowser
+import webbrowser
 
 # Sử dụng chế độ giao diện theo hệ thống (sáng/tối tự động)
 ctk.set_appearance_mode("System")
@@ -25,6 +25,7 @@ launched_apps = {}
 
 # Danh sách các nút ứng dụng để sắp xếp lại khi thay đổi kích thước
 buttons = []
+script_files = []  # danh sách các script
 
 def launch_script(script_path):
     """Khởi chạy script tương ứng nếu chưa chạy, nếu đã chạy thì không khởi chạy lại."""
@@ -50,9 +51,14 @@ def show_about():
     header = ctk.CTkLabel(about_window, text="Python Launcher v1.0", justify="center")
     header.pack(pady=(20, 5))
     
-    # Tạo label cho link Github với kiểu chữ gạch chân và màu xanh
-    link_label = ctk.CTkLabel(about_window, text="Tìm hiểu thêm tại Github", justify="center", text_color="blue")
-    link_label.configure(font=("Helvetica", 10, "underline"))
+    # Tạo label cho link Github với kiểu chữ gạch chân, màu xanh và cỡ chữ giống các text khác
+    link_label = ctk.CTkLabel(
+        about_window, 
+        text="Tìm hiểu thêm tại Github", 
+        justify="center", 
+        text_color="blue", 
+        font=("Helvetica", 12, "underline")
+    )
     link_label.pack()
     # Bind sự kiện click vào label để mở URL bằng thư viện webbrowser
     link_label.bind("<Button-1>", lambda e: webbrowser.open("https://github.com/nguyenhhoa03/mini-apps"))
@@ -129,15 +135,18 @@ about_button.pack(side="right", padx=5)
 update_button = ctk.CTkButton(frame_top, text="Update", command=update_project, fg_color="gray", hover_color="gray")
 update_button.pack(side="right", padx=5)
 
-# Khung chứa các ứng dụng (tiles)
-launcher_frame = ctk.CTkFrame(root)
+# Thêm ô tìm kiếm ở trên khu vực launcher
+search_entry = ctk.CTkEntry(root, placeholder_text="Tìm kiếm ứng dụng")
+search_entry.pack(padx=20, pady=(0,10), fill="x")
+
+# Khung chứa các ứng dụng (tiles) với thanh cuộn
+launcher_frame = ctk.CTkScrollableFrame(root)
 launcher_frame.pack(padx=20, pady=20, fill="both", expand=True)
 
 # Đường dẫn tới thư mục chứa các script (chỉ chứa các file app)
 scripts_dir = os.path.join(os.getcwd(), "scripts")
 
 # Quét các file .py theo định dạng "ten-script-python.py" trong thư mục scripts
-script_files = []
 if os.path.exists(scripts_dir):
     for file in os.listdir(scripts_dir):
         if file.endswith(".py") and "-" in file:
@@ -174,18 +183,32 @@ for index, script in enumerate(script_files):
 
 def update_grid_layout(event):
     """
-    Tính toán số cột dựa trên chiều rộng của launcher_frame và sắp xếp lại các nút.
+    Tính toán số cột dựa trên chiều rộng của launcher_frame và sắp xếp lại các nút đang hiển thị.
     Ước tính mỗi ô chiếm khoảng 120px (bao gồm padding).
     """
+    visible_buttons = [btn for btn in buttons if btn.winfo_ismapped()]
     tile_width = 120
     current_width = launcher_frame.winfo_width()
     new_cols = max(1, current_width // tile_width)
-    for index, btn in enumerate(buttons):
+    for index, btn in enumerate(visible_buttons):
         row = index // new_cols
         col = index % new_cols
         btn.grid_configure(row=row, column=col)
 
+def filter_buttons(event=None):
+    """Lọc các nút dựa trên nội dung ô tìm kiếm."""
+    search_text = search_entry.get().lower()
+    for btn in buttons:
+        # Sử dụng text của nút (display name) để so sánh
+        if search_text in btn.cget("text").lower():
+            btn.grid()  # hiển thị
+        else:
+            btn.grid_remove()  # ẩn đi
+    update_grid_layout(None)
+
 # Gắn sự kiện thay đổi kích thước của launcher_frame để cập nhật lại layout
 launcher_frame.bind("<Configure>", update_grid_layout)
+# Gắn sự kiện khi gõ phím vào ô tìm kiếm
+search_entry.bind("<KeyRelease>", filter_buttons)
 
 root.mainloop()
