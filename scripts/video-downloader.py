@@ -7,7 +7,7 @@ class VideoDownloaderApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Video Downloader")
-        self.root.geometry("500x400")
+        self.root.geometry("500x450")
 
         # URL Entry
         self.url_label = ctk.CTkLabel(root, text="Video URL:")
