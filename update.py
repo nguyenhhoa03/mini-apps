@@ -67,7 +67,7 @@ def install_and_configure():
         app.update()
         time.sleep(0.5)
 
-    status_label.configure(text="Cài đặt hoàn tất!")
+    status_label.configure(text="Cập nhật hoàn tất! Hãy khởi động lại laucher để áp dụng thay đổi")
     close_button = ctk.CTkButton(app, text="Đóng", command=app.destroy)
     close_button.pack(pady=10)
 
