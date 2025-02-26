@@ -1,6 +1,4 @@
 
-
-```markdown
 # 🚀 Mini apps laucher  
 
 Mini apps Launcher giúp bạn dễ dàng quản lý và khởi chạy các ứng dụng Python nhỏ (mini-apps) trên Windows và Linux.  
