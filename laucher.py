@@ -27,6 +27,68 @@ launched_apps = {}
 buttons = []
 script_files = []  # danh sách các script
 
+# Định nghĩa cửa sổ update
+def custom_askyesno(title, message):
+    # Tạo cửa sổ dialog mới
+    dialog = ctk.CTkToplevel(root)
+    dialog.title(title)
+    dialog.geometry("400x200")
+    dialog.wait_visibility()  # Đợi cho đến khi cửa sổ được hiển thị
+    dialog.grab_set()         # Ngăn người dùng tương tác với cửa sổ chính khi dialog mở
+
+    result = None
+
+    # Hiển thị thông báo
+    label = ctk.CTkLabel(dialog, text=message, wraplength=380)
+    label.pack(pady=20)
+
+    # Khai báo các hàm xử lý nút
+    def on_yes():
+        nonlocal result
+        result = True
+        dialog.destroy()
+
+    def on_no():
+        nonlocal result
+        result = False
+        dialog.destroy()
+
+    # Tạo frame chứa nút
+    btn_frame = ctk.CTkFrame(dialog)
+    btn_frame.pack(pady=10)
+
+    btn_yes = ctk.CTkButton(btn_frame, text="Có", command=on_yes)
+    btn_yes.pack(side="left", padx=10)
+
+    btn_no = ctk.CTkButton(btn_frame, text="Không", command=on_no)
+    btn_no.pack(side="left", padx=10)
+
+    # Đợi cho đến khi dialog bị đóng
+    dialog.wait_window()
+    return result
+
+def custom_showerror(title, message):
+    # Tạo cửa sổ dialog mới
+    dialog = ctk.CTkToplevel(root)
+    dialog.title(title)
+    dialog.geometry("400x200")
+    dialog.wait_visibility()  # Đợi cho đến khi cửa sổ hiển thị
+    dialog.grab_set()
+
+    # Hiển thị thông báo lỗi với màu chữ đỏ
+    label = ctk.CTkLabel(dialog, text=message, wraplength=380, text_color="red")
+    label.pack(pady=20)
+
+    # Hàm xử lý khi nhấn OK
+    def on_ok():
+        dialog.destroy()
+
+    btn_ok = ctk.CTkButton(dialog, text="OK", command=on_ok)
+    btn_ok.pack(pady=10)
+
+    dialog.wait_window()
+
+
 def launch_script(script_path):
     """Khởi chạy script tương ứng nếu chưa chạy, nếu đã chạy thì không khởi chạy lại."""
     global launched_apps
@@ -72,39 +134,33 @@ def show_about():
 
 def update_project():
     """Cập nhật dự án từ GitHub, copy file mới vào thư mục hiện tại và chạy file update.py để cấu hình."""
-    answer = messagebox.askyesno("Update", "Quá trình update sẽ tải về phiên bản mới và cập nhật dự án.\nBạn có muốn tiếp tục không?")
+    answer = custom_askyesno("Update", "Quá trình update sẽ tải về phiên bản mới và cập nhật dự án.\nBạn có muốn tiếp tục không?")
     if not answer:
         return
     try:
-        # URL tải file zip dự án từ GitHub (sử dụng branch main)
         zip_url = "https://github.com/nguyenhhoa03/mini-apps/archive/refs/heads/main.zip"
         response = requests.get(zip_url, stream=True)
         if response.status_code != 200:
-            messagebox.showerror("Error", f"Không thể tải file update: HTTP {response.status_code}")
+            custom_showerror("Error", f"Không thể tải file update: HTTP {response.status_code}")
             return
 
-        # Lưu file zip vào thư mục tạm
         temp_zip_path = os.path.join(tempfile.gettempdir(), "update.zip")
         with open(temp_zip_path, "wb") as f:
             f.write(response.content)
 
-        # Tạo thư mục tạm để giải nén
         temp_extract_dir = os.path.join(tempfile.gettempdir(), "mini_apps_update")
         if os.path.exists(temp_extract_dir):
             shutil.rmtree(temp_extract_dir)
         os.makedirs(temp_extract_dir)
 
-        # Giải nén file zip
         with zipfile.ZipFile(temp_zip_path, "r") as zip_ref:
             zip_ref.extractall(temp_extract_dir)
 
-        # Thư mục chứa mã nguồn sau khi giải nén (ở đây giả sử tên là "mini-apps-main")
         extracted_dir = os.path.join(temp_extract_dir, "mini-apps-main")
         if not os.path.exists(extracted_dir):
-            messagebox.showerror("Error", "Không tìm thấy thư mục mã nguồn sau khi giải nén.")
+            custom_showerror("Error", "Không tìm thấy thư mục mã nguồn sau khi giải nén.")
             return
 
-        # Copy tất cả file và thư mục từ extracted_dir vào thư mục hiện tại
         current_dir = os.getcwd()
         for item in os.listdir(extracted_dir):
             s = os.path.join(extracted_dir, item)
@@ -114,16 +170,15 @@ def update_project():
             else:
                 shutil.copy2(s, d)
 
-        # Sau khi cập nhật file, chạy file update.py để cấu hình
         try:
             subprocess.Popen(["python", "update.py"])
         except Exception as e:
-            messagebox.showerror("Error", f"Đã xảy ra lỗi khi chạy update.py: {e}")
+            custom_showerror("Error", f"Đã xảy ra lỗi khi chạy update.py: {e}")
             return
 
         print("Đang cập nhật thư viện")
     except Exception as e:
-        messagebox.showerror("Error", f"Đã xảy ra lỗi khi cập nhật: {e}")
+        custom_showerror("Error", f"Đã xảy ra lỗi khi cập nhật: {e}")
 
 # Tạo frame trên cùng để chứa nút About và Update (đặt bên phải)
 frame_top = ctk.CTkFrame(root)
