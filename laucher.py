@@ -121,7 +121,7 @@ def update_project():
             messagebox.showerror("Error", f"Đã xảy ra lỗi khi chạy update.py: {e}")
             return
 
-        messagebox.showinfo("Update", "Cập nhật thành công và cấu hình đã được cập nhật.\nVui lòng khởi động lại Launcher để áp dụng thay đổi.")
+        print("Đang cập nhật thư viện")
     except Exception as e:
         messagebox.showerror("Error", f"Đã xảy ra lỗi khi cập nhật: {e}")
 
