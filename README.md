@@ -1,7 +1,7 @@
 
 # 🚀 Mini apps laucher  
 
-Mini apps Launcher giúp bạn dễ dàng quản lý và khởi chạy các ứng dụng Python nhỏ (mini-apps) trên Windows và Linux.  
+Mini apps Launcher là một trình khởi chạy các tiện ích trên Windows và Linux.  
 Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh chóng và cập nhật phần mềm chỉ với một cú nhấp chuột.  
 
 ## 🖼️ Giao diện ứng dụng  
@@ -10,9 +10,8 @@ Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh ch
 ---
 
 ## ✨ Tính năng  
-✅ **Danh sách ứng dụng Python**: Tự động quét thư mục `scripts/` và hiển thị các ứng dụng có sẵn.  
+✅ **Đa dạng tiện ích**: Có rất nhiều tiện ích nhỏ dưới dạng mini apps.  
 ✅ **Tìm kiếm nhanh**: Bộ lọc ứng dụng theo tên, giúp bạn dễ dàng tìm kiếm.  
-✅ **Hỗ trợ thanh cuộn**: Khi có nhiều ứng dụng, danh sách sẽ có thanh cuộn tự động.  
 ✅ **Cập nhật từ GitHub**: Cập nhật ứng dụng mới nhất ngay trong phần mềm.  
 ✅ **Giao diện đẹp, dễ sử dụng**: Sử dụng thư viện `customtkinter` để có giao diện hiện đại.  
 
