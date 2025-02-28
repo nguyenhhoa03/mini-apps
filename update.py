@@ -22,7 +22,7 @@ progressbar.set(0)
 
 def install_and_configure():
     # Danh sách các thư viện cần cài đặt qua pip
-    pip_packages = ["customtkinter", "yt_dlp"]
+    pip_packages = ["customtkinter", "yt_dlp", "Pillow"]
 
     # Xác định các lệnh hệ thống bổ sung cho cấu hình,
     # Lưu ý: Một số lệnh này có thể không dùng được pip, hãy thay đổi theo nhu cầu.
