@@ -36,7 +36,7 @@ class BatteryStatusApp(ctk.CTk):
     
     def get_battery_status_windows(self):
         os.system("powercfg /batteryreport")
-        file_path = "battery-report.html"
+        file_path = os.path.expanduser("~/battery-report.html")
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
