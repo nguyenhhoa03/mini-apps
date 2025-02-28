@@ -1,4 +1,3 @@
-
 # 🚀 Mini apps laucher  
 
 Mini apps Launcher là một trình khởi chạy các tiện ích trên Windows và Linux.  
