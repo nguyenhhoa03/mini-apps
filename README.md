@@ -23,7 +23,7 @@ Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh ch
 1️⃣ **Cài Python** (nếu chưa có): Tải và cài đặt Python từ [python.org](https://www.python.org/).  
 2️⃣ **Cài đặt thư viện cần thiết và tải Laucher**:  
    ```sh
-   pip install customtkinter yt_dlp
+   pip install customtkinter yt_dlp Pillow
    git clone https://github.com/nguyenhhoa03/mini-apps.git
    ```
 3️⃣ **Chạy ứng dụng**:  
@@ -40,7 +40,7 @@ Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh ch
    ```
 2️⃣ **Cài đặt thư viện và chương trình**:  
    ```sh
-   pip install customtkinter yt_dlp
+   pip install customtkinter yt_dlp Pillow
    git clone https://github.com/nguyenhhoa03/mini-apps.git
 
    ```
