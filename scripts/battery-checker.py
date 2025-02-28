@@ -35,10 +35,8 @@ class BatteryStatusApp(ctk.CTk):
             return "Unsupported OS"
     
     def get_battery_status_windows(self):
-        # Xác định đường dẫn file báo cáo trong thư mục USERPROFILE
-        file_path = os.path.join(os.environ["USERPROFILE"], "battery-report.html")
-        # Chạy lệnh tạo báo cáo và lưu vào đường dẫn xác định
-        os.system(f'powercfg /batteryreport /output "{file_path}"')
+        os.system("powercfg /batteryreport")
+        file_path = "battery-report.html"
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
@@ -56,7 +54,7 @@ class BatteryStatusApp(ctk.CTk):
     def get_battery_status_linux(self):
         try:
             result = subprocess.run("upower -i $(upower -e | grep BAT)", shell=True, check=True,
-                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
             output = result.stdout
             design_match = re.search(r"energy-full-design:\s+(\d+\.?\d*)\s+Wh", output)
             full_match = re.search(r"energy-full:\s+(\d+\.?\d*)\s+Wh", output)
