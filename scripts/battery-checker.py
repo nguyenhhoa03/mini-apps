@@ -35,19 +35,37 @@ class BatteryStatusApp(ctk.CTk):
             return "Unsupported OS"
     
     def get_battery_status_windows(self):
-        os.system("powercfg /batteryreport")
-        file_path = os.path.expanduser("~/battery-report.html")
+        # Xác định thư mục chứa file script hiện tại
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        file_path = os.path.join(current_dir, "battery-report.html")
+        
+        # Tạo báo cáo pin với đầu ra chỉ định vào file battery-report.html
+        os.system(f'powercfg /batteryreport /output "{file_path}"')
+        
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
-            pattern = re.compile(r"DESIGN CAPACITY.*?>(\d+) mWh.*?FULL CHARGE CAPACITY.*?>(\d+) mWh", re.DOTALL)
+            
+            # Regex hỗ trợ tiếng Anh
+            pattern = re.compile(r"Design Capacity.*?(\d+)\s*mWh.*?Full Charge Capacity.*?(\d+)\s*mWh", 
+                                 re.IGNORECASE | re.DOTALL)
             match = pattern.search(content)
             if match:
                 design = int(match.group(1))
                 full = int(match.group(2))
                 health = (full / design) * 100
                 return f"Design Capacity: {design} mWh\nFull Charge Capacity: {full} mWh\nHealth: {health:.2f}%"
-            return "Battery info not found"
+            else:
+                # Nếu không tìm thấy, thử với định dạng tiếng Việt
+                pattern_vn = re.compile(r"Dung lượng thiết kế.*?(\d+)\s*mWh.*?Dung lượng sạc đầy.*?(\d+)\s*mWh", 
+                                          re.IGNORECASE | re.DOTALL)
+                match_vn = pattern_vn.search(content)
+                if match_vn:
+                    design = int(match_vn.group(1))
+                    full = int(match_vn.group(2))
+                    health = (full / design) * 100
+                    return f"Dung lượng thiết kế: {design} mWh\nDung lượng sạc đầy: {full} mWh\nSức khỏe: {health:.2f}%"
+                return "Battery info not found"
         except Exception as e:
             return f"Error reading battery report: {e}"
     
