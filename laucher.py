@@ -95,7 +95,7 @@ def launch_script(script_path):
     if script_path in launched_apps and launched_apps[script_path].poll() is None:
         print(f"{script_path} đã được mở.")
         return
-    proc = subprocess.Popen(["python", script_path])
+    proc = subprocess.Popen(["python", script_path], cwd=os.path.dirname(script_path))
     launched_apps[script_path] = proc
 
 def show_about():
@@ -202,11 +202,11 @@ launcher_frame.pack(padx=20, pady=20, fill="both", expand=True)
 scripts_dir = os.path.join(os.getcwd(), "scripts")
 
 # Quét các file .py theo định dạng "ten-script-python.py" trong thư mục scripts
-if os.path.exists(scripts_dir):
+if os.path.isdir(scripts_dir):
     for file in os.listdir(scripts_dir):
         if file.endswith(".py") and "-" in file:
             # Lưu đường dẫn tương đối (ví dụ: "scripts/ten-script-python.py")
-            script_files.append(os.path.join("scripts", file))
+            script_files.append(os.path.abspath(os.path.join("scripts", file)))
     script_files.sort()
 else:
     messagebox.showerror("Error", f"Thư mục '{scripts_dir}' không tồn tại.")
