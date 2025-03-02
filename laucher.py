@@ -199,7 +199,8 @@ launcher_frame = ctk.CTkScrollableFrame(root)
 launcher_frame.pack(padx=20, pady=20, fill="both", expand=True)
 
 # Đường dẫn tới thư mục chứa các script (chỉ chứa các file app)
-scripts_dir = os.path.join(os.getcwd(), "scripts")
+current_dir = os.path.dirname(os.path.realpath(__file__))
+scripts_dir = os.path.join(current_dir, "scripts")
 
 # Quét các file .py theo định dạng "ten-script-python.py" trong thư mục scripts
 if os.path.isdir(scripts_dir):
