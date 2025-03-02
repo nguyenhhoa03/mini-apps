@@ -37,7 +37,7 @@ class BatteryStatusApp(ctk.CTk):
     def get_battery_status_windows(self):
         # Xác định thư mục chứa file script hiện tại
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        file_path = os.path.join(current_dir, "battery-report.html")
+        file_path = os.path.join(os.path.expanduser("~"), "battery-report.html")
         
         # Tạo báo cáo pin với đầu ra chỉ định vào file battery-report.html
         os.system(f'powercfg /batteryreport /output "{file_path}"')
