@@ -30,7 +30,7 @@ def install_and_configure():
         # Các lệnh dành cho Windows
         additional_commands = [
             'echo Đang thực hiện cấu hình cho Windows',
-            # Thêm các lệnh khác, ví dụ:
+            "where ffmpeg >nul 2>&1 || (powershell -Command \"& {Invoke-WebRequest -Uri 'https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip' -OutFile 'ffmpeg.zip'}\" && powershell -Command \"& {Expand-Archive -Path 'ffmpeg.zip' -DestinationPath 'C:\\ffmpeg' -Force}\" && for /d %%D in (C:\\ffmpeg\\ffmpeg-*-essentials_build) do setx PATH \"%%PATH%%;%%D\\bin\")"
             # 'choco install package-name',
         ]
     elif os.name == "posix":
