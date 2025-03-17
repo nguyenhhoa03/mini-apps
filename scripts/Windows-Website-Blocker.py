@@ -70,8 +70,8 @@ class WebsiteBlockerApp(ctk.CTk):
         self.update_rules_list()
 
     def create_widgets(self):
-        # Frame chứa danh sách rule
-        self.rules_frame = ctk.CTkFrame(self)
+        # Sử dụng CTkScrollableFrame để có thanh cuộn cho danh sách rule
+        self.rules_frame = ctk.CTkScrollableFrame(self)
         self.rules_frame.pack(padx=20, pady=20, fill="both", expand=True)
 
         # Các nút điều khiển
