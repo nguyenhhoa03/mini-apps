@@ -23,13 +23,9 @@ Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh ch
 2️⃣ **Cài đặt thư viện cần thiết và tải Laucher**:  
    ```sh
    pip install customtkinter yt_dlp Pillow requests
-   git clone https://github.com/nguyenhhoa03/mini-apps.git
    ```
 3️⃣ **Chạy ứng dụng**:  
-   ```sh
-   cd mini-apps
-   python launcher.py
-   ```
+   Chạy file laucher.py
 
 ### 🐧 Linux (Ubuntu / Fedora)  
 1️⃣ **Cài Python** (nếu chưa có):  
@@ -57,6 +53,7 @@ Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh ch
   + Trình tải video
   + Kiểm tra tình trạng pin
   + Tính BMI (xác định tình trạng cơ thể)
+  + Windows Website Blocker: Chặn truy cập Website trên Windows 
 - Nhấn **Update** để cập nhật phiên bản mới nhất từ GitHub.  
 
 ---
