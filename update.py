@@ -22,7 +22,7 @@ progressbar.set(0)
 
 def install_and_configure():
     # Danh sách các thư viện cần cài đặt qua pip
-    pip_packages = ["customtkinter", "yt_dlp", "Pillow", "requests"]
+    pip_packages = ["customtkinter", "yt_dlp", "Pillow", "requests", "qrcode", "pyzbar"]
 
     # Xác định các lệnh hệ thống bổ sung cho cấu hình,
     # Lưu ý: Một số lệnh này có thể không dùng được pip, hãy thay đổi theo nhu cầu.
@@ -36,11 +36,14 @@ def install_and_configure():
     elif os.name == "posix":
         # Các lệnh dành cho Linux
         additional_commands = [
-            'echo Đang thực hiện cấu hình cho Linux',
-            # Thêm các lệnh khác, ví dụ:
-            # 'sudo apt-get update',
-            # 'sudo apt-get install package-name',
-        ]
+        'echo Đang thực hiện cấu hình cho Linux',
+        '[ -f /etc/debian_version ] && sudo apt install zbar-tools',
+        '[ -f /etc/fedora-release ] && sudo dnf install zbar',
+        '[ -f /etc/arch-release ] && sudo pacman -S zbar',
+        '[ -f /etc/SuSE-release ] && sudo zypper install zbar',
+        '[ -f /etc/alpine-release ] && sudo apk add zbar',
+    ]
+
     else:
         additional_commands = []
 
