@@ -26,6 +26,7 @@ Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh ch
    ```
 3️⃣ **Chạy ứng dụng**:  
    Chạy file laucher.py
+   Nhấn Update để tiếp tục cập nhật và cấu hình lên phiên bản mới nhất và tránh bị lỗi.
 
 Trình cài đặt tự động dành cho Windows sẽ sớm được phát hành. 
 
