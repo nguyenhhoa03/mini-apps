@@ -216,7 +216,7 @@ else:
 for index, script in enumerate(script_files):
     script_name = os.path.basename(script)  # Lấy tên file không kèm đường dẫn
     base_name = script_name[:-3]  # Loại bỏ đuôi ".py"
-    display_name = base_name.replace("-", " ").title()  # Thay "-" bằng khoảng trắng và in hoa chữ cái đầu
+    display_name = base_name.replace("-", " ")  # Thay "-" bằng khoảng trắng 
     current_dir = os.path.dirname(os.path.realpath(__file__))
     icon_path = os.path.join(current_dir, "icons", base_name + ".png")
     if os.path.exists(icon_path):
