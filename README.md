@@ -22,7 +22,7 @@ Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh ch
 1️⃣ **Cài Python** (nếu chưa có): Tải và cài đặt Python từ [python.org](https://www.python.org/).  
 2️⃣ **Cài đặt thư viện cần thiết và tải Laucher**:  
    ```sh
-   pip install customtkinter yt_dlp Pillow requests
+   pip install customtkinter yt_dlp Pillow requests pyzbar qrcode
    ```
 3️⃣ **Chạy ứng dụng**:  
    Chạy file laucher.py
