@@ -26,6 +26,8 @@ Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh ch
    ```
 3️⃣ **Chạy ứng dụng**:  
    Chạy file laucher.py
+---
+Trình cài đặt tự động dành cho Windows sẽ sớm được phát hành. 
 
 ### 🐧 Linux (Ubuntu / Fedora)  
 1️⃣ **Cài Python** (nếu chưa có):  
