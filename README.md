@@ -55,7 +55,9 @@ Trình cài đặt tự động dành cho Windows sẽ sớm được phát hàn
   + Trình tải video
   + Kiểm tra tình trạng pin
   + Tính BMI (xác định tình trạng cơ thể)
-  + Windows Website Blocker: Chặn truy cập Website trên Windows 
+  + Windows Website Blocker: Chặn truy cập Website trên Windows, nếu không hoạt động thì hãy [Xoá cache trình duyệt](https://www.thegioididong.com/game-app/cach-xoa-bo-nho-cache-tren-moi-trinh-duyet-cua-may-tinh-dien-1321903)
+  + Trình tạo mã QR
+  + ....
 - Nhấn **Update** để cập nhật phiên bản mới nhất từ GitHub.  
 
 ---
