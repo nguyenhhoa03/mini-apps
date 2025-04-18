@@ -36,13 +36,19 @@ def install_and_configure():
     elif os.name == "posix":
         # Các lệnh dành cho Linux
         additional_commands = [
-        'echo Đang thực hiện cấu hình cho Linux',
-        '[ -f /etc/debian_version ] && sudo apt install zbar-tools',
-        '[ -f /etc/fedora-release ] && sudo dnf install zbar',
-        '[ -f /etc/arch-release ] && sudo pacman -S zbar',
-        '[ -f /etc/SuSE-release ] && sudo zypper install zbar',
-        '[ -f /etc/alpine-release ] && sudo apk add zbar',
+        'echo "Đang thực hiện cấu hình cho Linux"',
+        # Debian/Ubuntu
+        '[ -f /etc/debian_version ] && sudo DEBIAN_FRONTEND=noninteractive apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y zbar-tools',
+        # Fedora
+        '[ -f /etc/fedora-release ] && sudo dnf install -y zbar',
+        # Arch
+        '[ -f /etc/arch-release ] && sudo pacman -Sy --noconfirm zbar',
+        # openSUSE
+        '[ -f /etc/SuSE-release ] && sudo zypper --non-interactive install zbar',
+        # Alpine
+        '[ -f /etc/alpine-release ] && sudo apk add --no-cache zbar',
     ]
+
 
     else:
         additional_commands = []
