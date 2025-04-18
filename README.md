@@ -51,6 +51,8 @@ Trình cài đặt tự động dành cho Windows sẽ sớm được phát hàn
 
 ---
 
+**Luư ý**: Khi update ứng dụng trên Linux cần chạy với quyền sudo.
+
 ## 🛠️ Sử dụng  
 
 - Có rất nhiều tiện ích trong laucher như:
