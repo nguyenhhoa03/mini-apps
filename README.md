@@ -5,7 +5,6 @@ Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh ch
 
 ## 🖼️ Giao diện ứng dụng  
 <img src="screenshot.png" alt="Mini apps Launcher UI" width="600"/>
-Ảnh chụp màn hình khi chạy trên Paspberry Pi OS
 
 ---
 
