@@ -27,11 +27,11 @@
 
 ## 🔧 Cấu hình tùy chỉnh
 
-- **ALLOWED_VIDEO_QUALITIES**: Danh sách các chất lượng video cho phép trong mã (`main.py`).
+- **ALLOWED_VIDEO_QUALITIES**: Danh sách các chất lượng video cho phép trong mã (`Video-Downloader.py`).
 - **Đường dẫn lưu**: Mặc định là `~/Downloads`. Bạn có thể thay đổi trong giao diện.
 
 
 ## 📝 Giấy phép
 
-Project được phát hành theo giấy phép [GNU General Public License v3.0](LICENSE)
+Project được phát hành theo giấy phép [GNU General Public License v3.0](https://github.com/nguyenhhoa03/mini-apps/blob/main/LICENSE)
 
