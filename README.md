@@ -72,7 +72,7 @@ Nhấn nút **Update** trong giao diện để tải về phiên bản mới nh�
 ## 📜 Giấy phép  
 
 Dự án này được phát hành theo **GNU General Public License v3.0**.  
-Chi tiết xem tại [LICENSE](LICENSE).  
+Chi tiết xem tại [LICENSE](https://github.com/nguyenhhoa03/mini-apps/blob/main/LICENSE).  
 
 📌 **Tác giả**: [Xem profile tại đây](https://github.com/nguyenhhoa03)  
 📌 **Nguồn mở trên GitHub**: [mini-apps](https://github.com/nguyenhhoa03/mini-apps)  
