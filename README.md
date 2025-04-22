@@ -46,7 +46,7 @@ Trình cài đặt tự động dành cho Windows sẽ sớm được phát hàn
 3️⃣ **Chạy ứng dụng**:  
    ```sh
    cd mini-apps
-   python3 launcher.py
+   python3 launcher.pyw
    ```
 
 ---
