@@ -27,7 +27,7 @@
 
 ## 🔧 Cấu hình tùy chỉnh
 
-- **Video quality **: Chọn chất lượng video tải về, mặc định là HD
+- **Video quality **: Chọn chất lượng video tải về
 - **Đường dẫn lưu**: Mặc định là `~/Downloads`. Bạn có thể thay đổi trong giao diện.
 
 
