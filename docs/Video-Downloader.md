@@ -27,7 +27,7 @@
 
 ## 🔧 Cấu hình tùy chỉnh
 
-- **ALLOWED_VIDEO_QUALITIES**: Danh sách các chất lượng video cho phép trong mã (`Video-Downloader.py`).
+- **Video quality **: Chọn chất lượng video tải về, mặc định là HD
 - **Đường dẫn lưu**: Mặc định là `~/Downloads`. Bạn có thể thay đổi trong giao diện.
 
 
