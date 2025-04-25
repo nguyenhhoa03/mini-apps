@@ -33,8 +33,8 @@ Trình cài đặt tự động dành cho Windows sẽ sớm được phát hàn
 ### 🐧 Linux (Ubuntu / Fedora)  
 1️⃣ **Cài Python** (nếu chưa có):  
    ```sh
-   sudo apt install python3 python3-pip  # Ubuntu
-   sudo dnf install python3 python3-pip  # Fedora
+   sudo apt install python3 python3-pip git -y # Ubuntu
+   sudo dnf install python3 python3-pip git -y # Fedora
    ```
 2️⃣ **Cài đặt thư viện và chương trình**:  
    ```sh
@@ -50,14 +50,13 @@ Trình cài đặt tự động dành cho Windows sẽ sớm được phát hàn
 
 ---
 
-**Luư ý**: Khi update ứng dụng trên Linux cần chạy với quyền sudo.
+**Luư ý**: Khi update ứng dụng trên Linux cần chạy với quyền **sudo**.
 
 ## 🛠️ Sử dụng  
 
 - Có rất nhiều tiện ích trong laucher như:
   + Trình tải video
   + Kiểm tra tình trạng pin
-  + Tính BMI (xác định tình trạng cơ thể)
   + Windows Website Blocker: Chặn truy cập Website trên Windows, nếu không hoạt động thì hãy [Xoá cache trình duyệt](https://www.thegioididong.com/game-app/cach-xoa-bo-nho-cache-tren-moi-trinh-duyet-cua-may-tinh-dien-1321903)
   + Trình tạo mã QR
   + ....
@@ -77,3 +76,4 @@ Chi tiết xem tại [LICENSE](LICENSE).
 
 📌 **Tác giả**: [Xem profile tại đây](https://github.com/nguyenhhoa03)  
 📌 **Nguồn mở trên GitHub**: [mini-apps](https://github.com/nguyenhhoa03/mini-apps)  
+📌 **Icons**: Cảm ơn [Lucide](https://lucide.dev/)
