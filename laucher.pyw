@@ -108,11 +108,11 @@ def show_about():
     about_window = ctk.CTkToplevel(root)
     about_window.title("About Launcher")
     about_window.geometry("300x200")
-    
+
     # Tạo tiêu đề
     header = ctk.CTkLabel(about_window, text="Python Launcher v1.0", justify="center")
     header.pack(pady=(20, 5))
-    
+
     # Tạo label cho link Github với kiểu chữ gạch chân, màu xanh và cỡ chữ giống các text khác
     link_label = ctk.CTkLabel(
         about_window, 
@@ -124,11 +124,11 @@ def show_about():
     link_label.pack()
     # Bind sự kiện click vào label để mở URL bằng thư viện webbrowser
     link_label.bind("<Button-1>", lambda e: webbrowser.open("https://github.com/nguyenhhoa03/mini-apps"))
-    
+
     # Tạo footer
     footer = ctk.CTkLabel(about_window, text="Make with love", justify="center")
     footer.pack(pady=(5, 20))
-    
+
     about_window.lift()
     about_window.focus_force()
 
