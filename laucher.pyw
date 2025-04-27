@@ -22,6 +22,46 @@ root.minsize(600, 400)
 # Biến toàn cục lưu cửa sổ About và các tiến trình ứng dụng đã khởi chạy
 about_window = None
 launched_apps = {}
+buttons = []
+script_files = []
+
+# Định nghĩa cửa sổ update với progress bar
+class UpdateDialog(ctk.CTkToplevel):
+    def __init__(self):
+        super().__init__(root)
+        self.title("Updating...")
+        self.geometry("400x150")
+        self.resizable(False, False)
+        self.grab_set()
+        self.progress = ctk.CTkProgressBar(self, width=300)
+        self.progress.set(0)
+        self.progress.pack(pady=40)
+        self.update_idletasks()
+# Hàm custom dialog
+
+def custom_askyesno(title, message):
+    dialog = ctk.CTkToplevel(root)
+    dialog.title(title)
+    dialog.geometry("400x200")
+    dialog.resizable(False, False)
+    dialog.grab_set()
+    result = None
+    label = ctk.CTkLabel(dialog, text=message, wraplength=380)
+    label.pack(pady=20)
+    def on_yes():
+        nonlocal result
+        result = True
+        dialog.destroy()
+    def on_no():
+        nonlocal result
+        result = False
+        dialog.destroy()
+    btn_frame = ctk.CTkFrame(dialog)
+    btn_frame.pack(pady=10)
+    ctk.CTkButton(btn_frame, text="Có", command=on_yes).pack(side="left", padx=10)
+    ctk.CTkButton(btn_frame, text="Không", command=on_no).pack(side="left", padx=10)
+    dialog.wait_window()
+    return result
 
 # Danh sách các nút ứng dụng để sắp xếp lại khi thay đổi kích thước
 buttons = []
@@ -68,24 +108,14 @@ def custom_askyesno(title, message):
     return result
 
 def custom_showerror(title, message):
-    # Tạo cửa sổ dialog mới
     dialog = ctk.CTkToplevel(root)
     dialog.title(title)
     dialog.geometry("400x200")
-    dialog.wait_visibility()  # Đợi cho đến khi cửa sổ hiển thị
+    dialog.resizable(False, False)
     dialog.grab_set()
-
-    # Hiển thị thông báo lỗi với màu chữ đỏ
     label = ctk.CTkLabel(dialog, text=message, wraplength=380, text_color="red")
     label.pack(pady=20)
-
-    # Hàm xử lý khi nhấn OK
-    def on_ok():
-        dialog.destroy()
-
-    btn_ok = ctk.CTkButton(dialog, text="OK", command=on_ok)
-    btn_ok.pack(pady=10)
-
+    ctk.CTkButton(dialog, text="OK", command=dialog.destroy).pack(pady=10)
     dialog.wait_window()
 
 
@@ -133,52 +163,51 @@ def show_about():
     about_window.focus_force()
 
 def update_project():
-    """Cập nhật dự án từ GitHub, copy file mới vào thư mục hiện tại và chạy file update.py để cấu hình."""
     answer = custom_askyesno("Update", "Quá trình update sẽ tải về phiên bản mới và cập nhật dự án.\nBạn có muốn tiếp tục không?")
     if not answer:
         return
+    progress_win = UpdateDialog()
     try:
         zip_url = "https://github.com/nguyenhhoa03/mini-apps/archive/refs/heads/main.zip"
         response = requests.get(zip_url, stream=True)
-        if response.status_code != 200:
-            custom_showerror("Error", f"Không thể tải file update: HTTP {response.status_code}")
-            return
-
-        temp_zip_path = os.path.join(tempfile.gettempdir(), "update.zip")
-        with open(temp_zip_path, "wb") as f:
-            f.write(response.content)
-
-        temp_extract_dir = os.path.join(tempfile.gettempdir(), "mini_apps_update")
-        if os.path.exists(temp_extract_dir):
-            shutil.rmtree(temp_extract_dir)
-        os.makedirs(temp_extract_dir)
-
-        with zipfile.ZipFile(temp_zip_path, "r") as zip_ref:
-            zip_ref.extractall(temp_extract_dir)
-
-        extracted_dir = os.path.join(temp_extract_dir, "mini-apps-main")
-        if not os.path.exists(extracted_dir):
-            custom_showerror("Error", "Không tìm thấy thư mục mã nguồn sau khi giải nén.")
-            return
-
-        current_dir = os.getcwd()
-        for item in os.listdir(extracted_dir):
-            s = os.path.join(extracted_dir, item)
-            d = os.path.join(current_dir, item)
-            if os.path.isdir(s):
-                shutil.copytree(s, d, dirs_exist_ok=True)
-            else:
-                shutil.copy2(s, d)
-
-        try:
-            subprocess.Popen(["python", "update.py"])
-        except Exception as e:
-            custom_showerror("Error", f"Đã xảy ra lỗi khi chạy update.py: {e}")
-            return
-
-        print("Đang cập nhật thư viện")
+        total = int(response.headers.get('content-length', 0))
+        chunk_size = 8192
+        temp_zip = tempfile.NamedTemporaryFile(delete=False)
+        downloaded = 0
+        # Tải file
+        for chunk in response.iter_content(chunk_size):
+            if chunk:
+                temp_zip.write(chunk)
+                downloaded += len(chunk)
+                if total:
+                    progress_win.progress.set(downloaded / total)
+                progress_win.update_idletasks()
+        temp_zip.close()
+        # Giải nén
+        with zipfile.ZipFile(temp_zip.name, 'r') as zf:
+            members = zf.namelist()
+            count = len(members)
+            for i, member in enumerate(members, 1):
+                zf.extract(member, tempfile.gettempdir())
+                progress_win.progress.set(i / count)
+                progress_win.update_idletasks()
+        # Copy file mới vào dự án
+        extracted_dir = os.path.join(tempfile.gettempdir(), 'mini-apps-main')
+        if os.path.exists(extracted_dir):
+            for item in os.listdir(extracted_dir):
+                s = os.path.join(extracted_dir, item)
+                d = os.path.join(os.getcwd(), item)
+                if os.path.isdir(s): shutil.copytree(s, d, dirs_exist_ok=True)
+                else: shutil.copy2(s, d)
+        else:
+            raise FileNotFoundError("Không tìm thấy thư mục sau khi giải nén")
+        # Đóng dialog và chạy update.py
+        progress_win.destroy()
+        subprocess.Popen(["python", "update.py"], cwd=os.getcwd())
     except Exception as e:
+        progress_win.destroy()
         custom_showerror("Error", f"Đã xảy ra lỗi khi cập nhật: {e}")
+
 
 # Tạo frame trên cùng để chứa nút About và Update (đặt bên phải)
 frame_top = ctk.CTkFrame(root)
