@@ -171,7 +171,7 @@ def update_project():
                 shutil.copy2(s, d)
 
         try:
-            subprocess.Popen(["python", "update.pyw"])
+            subprocess.Popen(["python", "update.py"])
         except Exception as e:
             custom_showerror("Error", f"Đã xảy ra lỗi khi chạy update.pyw: {e}")
             return
