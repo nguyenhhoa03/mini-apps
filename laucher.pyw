@@ -95,7 +95,10 @@ def launch_script(script_path):
     if script_path in launched_apps and launched_apps[script_path].poll() is None:
         print(f"{script_path} đã được mở.")
         return
-    proc = subprocess.Popen(["pythonw", script_path], cwd=os.path.dirname(script_path))
+    if os.name == "nt":
+        proc = subprocess.Popen(["pythonw", script_path], cwd=os.path.dirname(script_path))
+    else:
+        proc = subprocess.Popen(["python", script_path], cwd=os.path.dirname(script_path))
     launched_apps[script_path] = proc
 
 def show_about():
