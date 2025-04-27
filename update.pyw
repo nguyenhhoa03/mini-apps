@@ -52,7 +52,7 @@ def install_and_configure():
     total_steps = len(steps)
 
     for idx, (cmd, label) in enumerate(steps, start=1):
-        status_label.configure(text=f"Đang thực hiện: {label}")
+        status_label.configure(text=f"Đang cấu hình, việc này có thể mất một khoảng thời gian.")
         progressbar.set((idx - 1) / total_steps)
         app.update()
 
