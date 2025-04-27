@@ -133,7 +133,7 @@ def show_about():
     about_window.focus_force()
 
 def update_project():
-    """Cập nhật dự án từ GitHub, copy file mới vào thư mục hiện tại và chạy file update.py để cấu hình."""
+    """Cập nhật dự án từ GitHub, copy file mới vào thư mục hiện tại và chạy file update.pyw để cấu hình."""
     answer = custom_askyesno("Update", "Quá trình update sẽ tải về phiên bản mới và cập nhật dự án.\nBạn có muốn tiếp tục không?")
     if not answer:
         return
@@ -171,9 +171,9 @@ def update_project():
                 shutil.copy2(s, d)
 
         try:
-            subprocess.Popen(["python", "update.py"])
+            subprocess.Popen(["python", "update.pyw"])
         except Exception as e:
-            custom_showerror("Error", f"Đã xảy ra lỗi khi chạy update.py: {e}")
+            custom_showerror("Error", f"Đã xảy ra lỗi khi chạy update.pyw: {e}")
             return
 
         print("Đang cập nhật thư viện")
