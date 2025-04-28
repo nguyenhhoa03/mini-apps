@@ -4,7 +4,7 @@ Mini apps Launcher là một trình khởi chạy các tiện ích trên Windows
 Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh chóng và cập nhật phần mềm chỉ với một cú nhấp chuột.  
 
 ## 🖼️ Giao diện ứng dụng  
-<img src="https://i.ibb.co/0xjDSvf/screenshot.png" alt="Mini apps Launcher UI" width="600"/>
+<img src="https://i.ibb.co/JWcnL34r/screenshot.png" alt="Mini apps Launcher UI" width="600"/>
 
 ---
 
