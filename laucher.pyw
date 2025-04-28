@@ -199,7 +199,7 @@ search_entry.pack(padx=20, pady=(0,10), fill="x")
 
 # Khung chứa các ứng dụng (tiles) với thanh cuộn
 launcher_frame = ctk.CTkScrollableFrame(root)
-launcher_frame.pack(padx=20, pady=20, fill="both", expand=True)
+launcher_frame.pack(padx=0, pady=0, fill="both", expand=True)
 
 # Đường dẫn tới thư mục chứa các script (chỉ chứa các file app)
 current_dir = os.path.dirname(os.path.realpath(__file__))
