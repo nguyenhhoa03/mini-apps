@@ -22,7 +22,7 @@ Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh ch
 1️⃣ **Cài Python** (nếu chưa có): Tải và cài đặt Python từ [python.org](https://www.python.org/).  
 2️⃣ **Cài đặt thư viện cần thiết và tải Laucher**:  
    ```sh
-   pip install customtkinter yt_dlp Pillow requests pyzbar qrcode
+   pip install customtkinter yt_dlp Pillow requests
    ```
 3️⃣ **Chạy ứng dụng**:  
    Chạy file laucher.py
@@ -58,7 +58,6 @@ Trình cài đặt tự động dành cho Windows sẽ sớm được phát hàn
   + Trình tải video
   + Kiểm tra tình trạng pin
   + Windows Website Blocker: Chặn truy cập Website trên Windows, nếu không hoạt động thì hãy [Xoá cache trình duyệt](https://www.thegioididong.com/game-app/cach-xoa-bo-nho-cache-tren-moi-trinh-duyet-cua-may-tinh-dien-1321903)
-  + Trình tạo mã QR
   + ....
 
 - Xem thêm tại [Documents](https://github.com/nguyenhhoa03/mini-apps/tree/main/docs)
