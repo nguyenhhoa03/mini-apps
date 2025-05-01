@@ -31,7 +31,7 @@ def run_command(cmd):
 
 
 def install_and_configure():
-    pip_packages = ["customtkinter", "yt_dlp", "Pillow", "requests", "qrcode", "pyzbar"]
+    pip_packages = ["customtkinter", "yt_dlp", "Pillow", "requests"]
 
     if os.name == "nt":
         additional_commands = [
@@ -41,11 +41,6 @@ def install_and_configure():
     else:
         additional_commands = [
             'echo "Đang thực hiện cấu hình cho Linux"',
-            '[ -f /etc/debian_version ] && sudo DEBIAN_FRONTEND=noninteractive apt-get update -qq && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y zbar-tools',
-            '[ -f /etc/fedora-release ] && sudo dnf install -y zbar',
-            '[ -f /etc/arch-release ] && sudo pacman -Sy --noconfirm zbar',
-            '[ -f /etc/SuSE-release ] && sudo zypper --non-interactive install zbar',
-            '[ -f /etc/alpine-release ] && sudo apk add --no-cache zbar',
         ]
 
     steps = [(f"pip install {pkg}", pkg) for pkg in pip_packages] + [(cmd, cmd) for cmd in additional_commands]
