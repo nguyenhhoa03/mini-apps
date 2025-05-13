@@ -30,8 +30,8 @@ Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh ch
 
 Trình cài đặt tự động dành cho Windows sẽ sớm được phát hành. 
 
-### 🐧 Linux (Ubuntu / Fedora)  
-1️⃣ **Cài Python** (nếu chưa có):  
+### 🐧 Linux
+1️⃣ **Cài đặt Python** (nếu chưa có):  
    ```sh
    sudo apt install python3 python3-pip git -y # Ubuntu
    sudo dnf install python3 python3-pip git -y # Fedora
@@ -50,7 +50,6 @@ Trình cài đặt tự động dành cho Windows sẽ sớm được phát hàn
 
 ---
 
-**Luư ý**: Khi update ứng dụng trên Linux cần chạy với quyền **sudo**.
 
 ## 🛠️ Sử dụng  
 
