@@ -20,7 +20,7 @@ Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh ch
 
 ### 🖥️ Windows  
 1️⃣ **Cài Python** (nếu chưa có): Tải và cài đặt Python từ [python.org](https://www.python.org/).  
-2️⃣ **Tải file cài đặt và chạy**: Tải về file cài đặt [Tại đây}(https://github.com/nguyenhhoa03/mini-apps/releases/tag/nguyenhhoa03). Trình cài đặt sẽ thực hiện mọi thứ cần thiết.
+2️⃣ **Tải file cài đặt và chạy**: Tải về file cài đặt [Tại đây](https://github.com/nguyenhhoa03/mini-apps/releases/tag/nguyenhhoa03). Trình cài đặt sẽ thực hiện mọi thứ cần thiết.
 3️⃣ **Mở App trên Desktop** của bạn.
 
 ### 🐧 Linux
