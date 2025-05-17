@@ -42,4 +42,4 @@ if os.name == "nt":
 else:
     print("[LOG] Không phải Windows, bỏ qua cài đặt FFmpeg.")
 
-print("[LOG] Hoàn tất cập nhật.")
+print("[LOG] Hoàn tất cập nhật. Hãy khởi động lại Laucher để áp dụng thay đổi.")
