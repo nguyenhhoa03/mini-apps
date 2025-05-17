@@ -10,7 +10,7 @@ ALLOWED_VIDEO_QUALITIES = [
 class VideoDownloaderApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Video Downloader")
+        self.root.title("Video Downloader (Base on yt-dlp)")
         self.root.geometry("500x500")
 
         # URL Entry
