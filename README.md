@@ -68,3 +68,8 @@ Chi tiết xem tại [LICENSE](LICENSE).
 📌 **Tác giả**: [Xem profile tại đây](https://github.com/nguyenhhoa03)  
 📌 **Nguồn mở trên GitHub**: [mini-apps](https://github.com/nguyenhhoa03/mini-apps)  
 📌 **Icons**: Cảm ơn [Lucide](https://lucide.dev/)
+
+<p align="center">
+  Copyright (C) 2025 <a href="https://github.com/nguyenhhoa03/">nguyenhhoa03</a>
+</p>
+
