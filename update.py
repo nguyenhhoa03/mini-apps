@@ -1,6 +1,6 @@
 import os
-import time
 import threading
+import subprocess
 import customtkinter as ctk
 
 # Cấu hình giao diện theo hệ thống (sáng/tối tự động)
@@ -9,61 +9,64 @@ ctk.set_default_color_theme("blue")
 
 # Tạo cửa sổ chính
 app = ctk.CTk()
-app.title("Cài đặt Thư viện cho Launcher")
-app.geometry("400x200")
+app.title("Chạy update-script.py")
+app.geometry("600x400")
 
-# Label thông báo trạng thái
-status_label = ctk.CTkLabel(app, text="Đang cài đặt các thư viện cần thiết...")
-status_label.pack(pady=20)
+# Khung chứa log
+log_frame = ctk.CTkFrame(app)
+log_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-# Thanh progressbar để hiển thị tiến trình cài đặt
-progressbar = ctk.CTkProgressBar(app, width=300)
-progressbar.pack(pady=10)
-progressbar.set(0)
+# Text widget để hiển thị log
+log_text = ctk.CTkTextbox(log_frame, wrap="word", state="disabled")
+log_text.pack(fill="both", expand=True)
 
-# Nút Đóng (ẩn lúc đầu)
+# Nút Đóng
 close_button = ctk.CTkButton(app, text="Đóng", command=app.destroy)
 
 
-def run_command(cmd):
-    """Chạy lệnh hệ thống và trả về status"""
-    return os.system(cmd)
+def append_log(message: str):
+    """
+    Chèn message vào log_text và tự cuộn xuống cuối
+    """
+    log_text.configure(state="normal")
+    log_text.insert("end", message + "\n")
+    log_text.see("end")
+    log_text.configure(state="disabled")
 
 
-def install_and_configure():
-    pip_packages = ["customtkinter", "yt_dlp", "Pillow", "requests"]
+def run_update_script():
+    """
+    Chạy file update-script.py và lấy stdout liên tục để hiển thị
+    """
+    # Xác định đường dẫn file script
+    script_path = os.path.join(os.path.dirname(__file__), 'update-script.py')
 
-    if os.name == "nt":
-        additional_commands = [
-            'echo Đang thực hiện cấu hình cho Windows',
-            "where ffmpeg >nul 2>&1 || (powershell -Command \"& {Invoke-WebRequest -Uri 'https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip' -OutFile 'ffmpeg.zip'}\" && powershell -Command \"& {Expand-Archive -Path 'ffmpeg.zip' -DestinationPath 'C:\\ffmpeg' -Force}\" && for /d %D in (C:\\ffmpeg\\ffmpeg-*-essentials_build) do setx PATH \"%PATH%;%D\\bin\")"
-        ]
-    else:
-        additional_commands = [
-            'echo "Đang thực hiện cấu hình cho Linux"',
-        ]
+    # Tùy chọn ẩn console trên Windows
+    creation_flags = 0
+    if os.name == 'nt':
+        creation_flags = subprocess.CREATE_NO_WINDOW
 
-    steps = [(f"pip install {pkg}", pkg) for pkg in pip_packages] + [(cmd, cmd) for cmd in additional_commands]
-    total_steps = len(steps)
+    # Mở subprocess và lấy output line-by-line
+    proc = subprocess.Popen(
+        ['python', script_path],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        bufsize=1,
+        text=True,
+        creationflags=creation_flags
+    )
 
-    for idx, (cmd, label) in enumerate(steps, start=1):
-        status_label.configure(text=f"Đang cấu hình, việc này có thể mất một khoảng thời gian.")
-        progressbar.set((idx - 1) / total_steps)
-        app.update()
+    # Đọc từng dòng đầu ra
+    for line in proc.stdout:
+        append_log(line.rstrip())
 
-        # Chạy lệnh trong subprocess để không block
-        thread = threading.Thread(target=run_command, args=(cmd,))
-        thread.start()
-        # Chờ thread kết thúc hoặc timeout nếu cần
-        thread.join()
+    proc.stdout.close()
+    proc.wait()
+    append_log("--- Hoàn tất chạy update-script.py ---")
+    close_button.pack(pady=5)
 
-        progressbar.set(idx / total_steps)
-        app.update()
-        time.sleep(0.3)
 
-    status_label.configure(text="Cập nhật hoàn tất! Hãy khởi động lại launcher.")
-    close_button.pack(pady=10)
+# Bắt đầu chạy trong thread
+threading.Thread(target=run_update_script, daemon=True).start()
 
-# Bắt đầu chạy install_and_configure trong thread để không block mainloop
-threading.Thread(target=install_and_configure, daemon=True).start()
 app.mainloop()
