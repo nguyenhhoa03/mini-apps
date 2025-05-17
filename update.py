@@ -36,17 +36,14 @@ def append_log(message: str):
 
 def run_update_script():
     """
-    Chạy file update-script.py và lấy stdout liên tục để hiển thị
+    Chạy file update-script.py và chỉ hiển thị các dòng log bắt đầu bằng prefix [LOG]
     """
-    # Xác định đường dẫn file script
     script_path = os.path.join(os.path.dirname(__file__), 'update-script.py')
 
-    # Tùy chọn ẩn console trên Windows
     creation_flags = 0
     if os.name == 'nt':
         creation_flags = subprocess.CREATE_NO_WINDOW
 
-    # Mở subprocess và lấy output line-by-line
     proc = subprocess.Popen(
         ['python', script_path],
         stdout=subprocess.PIPE,
@@ -56,9 +53,13 @@ def run_update_script():
         creationflags=creation_flags
     )
 
-    # Đọc từng dòng đầu ra
     for line in proc.stdout:
-        append_log(line.rstrip())
+        line = line.rstrip()
+        # Chỉ hiển thị các dòng bắt đầu bằng [LOG]
+        if line.startswith("[LOG]"):
+            # Bỏ prefix và khoảng trắng sau
+            message = line[6:] if len(line) > 6 else ''
+            append_log(message)
 
     proc.stdout.close()
     proc.wait()
@@ -66,7 +67,7 @@ def run_update_script():
     close_button.pack(pady=5)
 
 
-# Bắt đầu chạy trong thread
+# Chạy trong thread để không block GUI
 threading.Thread(target=run_update_script, daemon=True).start()
 
 app.mainloop()
