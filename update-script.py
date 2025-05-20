@@ -28,11 +28,11 @@ if __name__ == '__main__':
         log(f"Cài pip thất bại ({e.returncode})", ERROR_PREFIX)
         sys.exit(1)
 
-    # 2. Cài FFmpeg trên Windows sử dụng 7z.exe kèm theo
+    # 2. Cài FFmpeg trên Windows sử dụng 7z.exe đi kèm
     if os.name == 'nt':
         log("Phát hiện Windows, kiểm tra FFmpeg...")
         if not shutil.which('ffmpeg'):
-            # Xác định đường dẫn đến 7z.exe nằm cùng thư mục script
+            # Đường dẫn đến 7z.exe nằm trong thư mục 7-zip cạnh script
             base_dir = Path(__file__).parent
             sevenz = base_dir / '7-zip' / '7z.exe'
             if not sevenz.is_file():
@@ -59,7 +59,7 @@ if __name__ == '__main__':
             log(f"Giải nén FFmpeg đến {target}...")
             try:
                 target.mkdir(parents=True, exist_ok=True)
-                cmd = [str(sevenz), 'x', str(ff7z), f'-o{target}', '-y']
+                cmd = [str(sevenz), 'x', str(ff7z), f'-o{str(target)}', '-y']
                 subprocess.check_call(cmd)
                 log(f"Giải nén xong tại {target}")
             except subprocess.CalledProcessError as e:
@@ -68,13 +68,18 @@ if __name__ == '__main__':
 
             # Cập nhật PATH
             try:
-                cmd = ['powershell', '-Command',
-                       "setx PATH $Env:PATH + ';C:/ffmpeg/bin'"]
-                subprocess.check_call(cmd)
+                # Dùng Powershell để thêm C:\ffmpeg\bin vào PATH
+                ps_cmd = [
+                    'powershell',
+                    '-NoProfile',
+                    '-Command',
+                    '& { Setx PATH "$Env:Path;C:\\ffmpeg\\bin" }'
+                ]
+                subprocess.check_call(ps_cmd)
                 log("Cập nhật PATH thành công.")
-            except Exception as e:
-                log(f"Lỗi khi cập nhật PATH: {e}", ERROR_PREFIX)
-                # Không dừng, vì FFmpeg đã được cài
+            except subprocess.CalledProcessError as e:
+                log(f"Lỗi khi cập nhật PATH: mã {e.returncode}", ERROR_PREFIX)
+                # Không dừng, vì FFmpeg đã cài vào thư mục
         else:
             log("FFmpeg đã có sẵn trên hệ thống.")
     else:
