@@ -17,11 +17,29 @@ def log(msg: str, prefix: str = LOG_PREFIX):
         print(f"{prefix} {safe}")
 
 
-def update_path(new_path: str) -> bool:
-    """Cập nhật biến PATH bằng os.system để đảm bảo trên Windows."""
-    command = f'setx PATH "{new_path}"'
-    result = os.system(command)
-    return result == 0
+def run_windows_ffmpeg_install(base_dir: Path):
+    """
+    Sử dụng lệnh batch để kiểm tra và cài FFmpeg qua 7z.exe nằm trong thư mục 7-zip.
+    """
+    sevenz = base_dir / '7-zip' / '7z.exe'
+    if not sevenz.is_file():
+        log(f"Không tìm thấy 7z.exe tại {sevenz}", ERROR_PREFIX)
+        sys.exit(1)
+
+    # Tải và giải nén FFmpeg, cập nhật PATH trong 1 dòng batch
+    batch = (
+        f"where ffmpeg >nul 2>&1 || ("
+        f"powershell -Command \"Invoke-WebRequest -Uri 'https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z' -OutFile 'ffmpeg.7z'\" && "
+        f"{sevenz} x ffmpeg.7z -oC:\\ffmpeg -y && "
+        f"for /d %D in (C:\\ffmpeg\\ffmpeg-*-essentials_build) do setx PATH \"%PATH%;%D\\bin\"")"
+    )
+    log("Chạy batch cài đặt FFmpeg via 7z.exe...")
+    rc = os.system(batch)
+    if rc != 0:
+        log(f"Batch FFmpeg thất bại với mã {rc}", ERROR_PREFIX)
+        sys.exit(1)
+    else:
+        log("FFmpeg đã được cài và PATH được cập nhật.")
 
 
 if __name__ == '__main__':
@@ -35,55 +53,12 @@ if __name__ == '__main__':
         log(f"Cài pip thất bại ({e.returncode})", ERROR_PREFIX)
         sys.exit(1)
 
-    # 2. Cài FFmpeg trên Windows sử dụng 7z.exe đi kèm
+    # 2. Cài FFmpeg trên Windows bằng batch + 7z.exe
     if os.name == 'nt':
-        log("Phát hiện Windows, kiểm tra FFmpeg...")
+        log("Phát hiện Windows, kiểm tra và cài FFmpeg nếu cần...")
+        # shutil.which trả về None nếu không tìm thấy ffmpeg
         if not shutil.which('ffmpeg'):
-            base_dir = Path(__file__).parent
-            sevenz = base_dir / '7-zip' / '7z.exe'
-            if not sevenz.is_file():
-                log(f"Không tìm thấy 7z.exe tại {sevenz}", ERROR_PREFIX)
-                sys.exit(1)
-
-            # Tải FFmpeg
-            ff7z = base_dir / 'ffmpeg-release-essentials.7z'
-            url = 'https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z'
-            log("Chưa tìm thấy FFmpeg, bắt đầu tải về...")
-            try:
-                with requests.get(url, stream=True, timeout=30) as r:
-                    r.raise_for_status()
-                    with open(ff7z, 'wb') as f:
-                        for chunk in r.iter_content(8192):
-                            f.write(chunk)
-                log("Tải về hoàn tất.")
-            except Exception as e:
-                log(f"Lỗi khi tải FFmpeg: {e}", ERROR_PREFIX)
-                sys.exit(1)
-
-            # Giải nén bằng 7z.exe
-            target = Path('C:/ffmpeg')
-            log(f"Giải nén FFmpeg đến {target}...")
-            try:
-                target.mkdir(parents=True, exist_ok=True)
-                cmd = [str(sevenz), 'x', str(ff7z), f'-o{target}', '-y']
-                subprocess.check_call(cmd)
-                log(f"Giải nén xong tại {target}")
-            except subprocess.CalledProcessError as e:
-                log(f"Lỗi khi giải nén FFmpeg: mã {e.returncode}", ERROR_PREFIX)
-                sys.exit(1)
-
-            # Cập nhật PATH bằng os.system
-            current_path = os.environ.get('PATH', '')
-            ff_bin = str(target / 'bin')
-            if ff_bin.lower() not in current_path.lower().split(os.pathsep):
-                new_path = current_path + os.pathsep + ff_bin
-                log(f"Cập nhật PATH thêm {ff_bin}...")
-                if update_path(new_path):
-                    log("Cập nhật PATH thành công. Khởi động lại session để có hiệu lực.")
-                else:
-                    log("Cập nhật PATH thất bại.", ERROR_PREFIX)
-            else:
-                log("Đã có C:\\ffmpeg\\bin trong PATH.")
+            run_windows_ffmpeg_install(Path(__file__).parent)
         else:
             log("FFmpeg đã có sẵn trên hệ thống.")
     else:
