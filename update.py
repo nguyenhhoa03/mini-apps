@@ -1,4 +1,5 @@
 import os
+import sys
 import threading
 import subprocess
 import customtkinter as ctk
@@ -38,34 +39,39 @@ def run_update_script():
     """
     Chạy file update-script.py và chỉ hiển thị các dòng log bắt đầu bằng prefix [LOG]
     """
-    script_path = os.path.join(os.path.dirname(__file__), 'update-script.py')
+    # Đảm bảo chạy đúng interpreter Python trên cả Windows và Linux
+    python_exec = sys.executable
+    script_dir = os.path.dirname(__file__)
+    script_path = os.path.join(script_dir, 'update-script.py')
 
+    # Thiết lập để không bật cửa sổ console trên Windows
     creation_flags = 0
-    if os.name == 'nt':
+    if os.name == 'nt' and hasattr(subprocess, 'CREATE_NO_WINDOW'):
         creation_flags = subprocess.CREATE_NO_WINDOW
 
+    # Khởi tạo subprocess với cwd để chắc chắn tìm đúng script và môi trường
     proc = subprocess.Popen(
-        ['python', script_path],
+        [python_exec, script_path],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         bufsize=1,
         text=True,
+        cwd=script_dir,
         creationflags=creation_flags
     )
 
+    # Đọc từng dòng đầu ra và chỉ hiển thị log cần thiết
     for line in proc.stdout:
         line = line.rstrip()
-        # Chỉ hiển thị các dòng bắt đầu bằng [LOG]
         if line.startswith("[LOG]"):
-            # Bỏ prefix và khoảng trắng sau
             message = line[6:] if len(line) > 6 else ''
             append_log(message)
 
     proc.stdout.close()
     proc.wait()
     append_log("--- Hoàn tất chạy update-script.py ---")
+    # Hiển thị nút Đóng khi hoàn thành
     close_button.pack(pady=5)
-
 
 # Chạy trong thread để không block GUI
 threading.Thread(target=run_update_script, daemon=True).start()
