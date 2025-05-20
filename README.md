@@ -20,26 +20,16 @@ Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh ch
 
 ### 🖥️ Windows  
 1️⃣ **Cài Python** (nếu chưa có): Tải và cài đặt Python từ [python.org](https://www.python.org/).  
-2️⃣ **Tải file cài đặt và chạy**: Tải về file cài đặt [Tại đây](https://github.com/nguyenhhoa03/mini-apps/releases/tag/nguyenhhoa03). Trình cài đặt sẽ thực hiện mọi thứ cần thiết.
-3️⃣ **Mở App trên Desktop** của bạn.
-
-### 🐧 Linux
-1️⃣ **Cài đặt Python** (nếu chưa có):  
-   ```sh
-   sudo apt install python3 python3-pip git -y # Ubuntu
-   sudo dnf install python3 python3-pip git -y # Fedora
-   ```
-2️⃣ **Cài đặt thư viện và chương trình**:  
+**Cài đặt thư viện và chương trình**:  
    ```sh
    pip install customtkinter yt_dlp Pillow requests
-   git clone https://github.com/nguyenhhoa03/mini-apps.git
 
    ```
-3️⃣ **Chạy ứng dụng**:  
-   ```sh
-   cd mini-apps
-   python3 launcher.pyw
-   ```
+
+2️⃣ **Tải file cài đặt và chạy**: Tải về file cài đặt [Tại đây](https://github.com/nguyenhhoa03/mini-apps/releases/tag/nguyenhhoa03). Trình cài đặt sẽ thực hiện mọi thứ cần thiết.
+
+3️⃣ **Mở App trên Desktop** của bạn.
+
 
 ---
 
