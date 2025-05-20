@@ -17,6 +17,13 @@ def log(msg: str, prefix: str = LOG_PREFIX):
         print(f"{prefix} {safe}")
 
 
+def update_path(new_path: str) -> bool:
+    """Cập nhật biến PATH bằng os.system để đảm bảo trên Windows."""
+    command = f'setx PATH "{new_path}"'
+    result = os.system(command)
+    return result == 0
+
+
 if __name__ == '__main__':
     # 1. Cài thư viện cần thiết
     log("Cài đặt các thư viện Python cần thiết...")
@@ -32,7 +39,6 @@ if __name__ == '__main__':
     if os.name == 'nt':
         log("Phát hiện Windows, kiểm tra FFmpeg...")
         if not shutil.which('ffmpeg'):
-            # Đường dẫn đến 7z.exe nằm trong thư mục 7-zip cạnh script
             base_dir = Path(__file__).parent
             sevenz = base_dir / '7-zip' / '7z.exe'
             if not sevenz.is_file():
@@ -59,27 +65,25 @@ if __name__ == '__main__':
             log(f"Giải nén FFmpeg đến {target}...")
             try:
                 target.mkdir(parents=True, exist_ok=True)
-                cmd = [str(sevenz), 'x', str(ff7z), f'-o{str(target)}', '-y']
+                cmd = [str(sevenz), 'x', str(ff7z), f'-o{target}', '-y']
                 subprocess.check_call(cmd)
                 log(f"Giải nén xong tại {target}")
             except subprocess.CalledProcessError as e:
                 log(f"Lỗi khi giải nén FFmpeg: mã {e.returncode}", ERROR_PREFIX)
                 sys.exit(1)
 
-            # Cập nhật PATH
-            try:
-                # Dùng Powershell để thêm C:\ffmpeg\bin vào PATH
-                ps_cmd = [
-                    'powershell',
-                    '-NoProfile',
-                    '-Command',
-                    '& { Setx PATH "$Env:Path;C:\\ffmpeg\\bin" }'
-                ]
-                subprocess.check_call(ps_cmd)
-                log("Cập nhật PATH thành công.")
-            except subprocess.CalledProcessError as e:
-                log(f"Lỗi khi cập nhật PATH: mã {e.returncode}", ERROR_PREFIX)
-                # Không dừng, vì FFmpeg đã cài vào thư mục
+            # Cập nhật PATH bằng os.system
+            current_path = os.environ.get('PATH', '')
+            ff_bin = str(target / 'bin')
+            if ff_bin.lower() not in current_path.lower().split(os.pathsep):
+                new_path = current_path + os.pathsep + ff_bin
+                log(f"Cập nhật PATH thêm {ff_bin}...")
+                if update_path(new_path):
+                    log("Cập nhật PATH thành công. Khởi động lại session để có hiệu lực.")
+                else:
+                    log("Cập nhật PATH thất bại.", ERROR_PREFIX)
+            else:
+                log("Đã có C:\\ffmpeg\\bin trong PATH.")
         else:
             log("FFmpeg đã có sẵn trên hệ thống.")
     else:
