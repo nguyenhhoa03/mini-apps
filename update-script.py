@@ -26,12 +26,13 @@ def run_windows_ffmpeg_install(base_dir: Path):
         log(f"Không tìm thấy 7z.exe tại {sevenz}", ERROR_PREFIX)
         sys.exit(1)
 
-    # Tải và giải nén FFmpeg, cập nhật PATH trong 1 dòng batch
+    # Tạo chuỗi batch
     batch = (
-        f"where ffmpeg >nul 2>&1 || ("
-        f"powershell -Command \"Invoke-WebRequest -Uri 'https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z' -OutFile 'ffmpeg.7z'\" && "
-        f"{sevenz} x ffmpeg.7z -oC:\\ffmpeg -y && "
-        f"for /d %D in (C:\\ffmpeg\\ffmpeg-*-essentials_build) do setx PATH \"%PATH%;%D\\bin\"")"
+        "where ffmpeg >nul 2>&1 || ("
+        "powershell -Command \"Invoke-WebRequest -Uri 'https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z' -OutFile 'ffmpeg.7z'\" && "
+        f"\"{sevenz}\" x ffmpeg.7z -oC:\\ffmpeg -y && "
+        "for /d %D in (C:\\ffmpeg\\ffmpeg-*-essentials_build) do setx PATH \"%PATH%;%D\\bin\""
+        ")"
     )
     log("Chạy batch cài đặt FFmpeg via 7z.exe...")
     rc = os.system(batch)
@@ -56,7 +57,6 @@ if __name__ == '__main__':
     # 2. Cài FFmpeg trên Windows bằng batch + 7z.exe
     if os.name == 'nt':
         log("Phát hiện Windows, kiểm tra và cài FFmpeg nếu cần...")
-        # shutil.which trả về None nếu không tìm thấy ffmpeg
         if not shutil.which('ffmpeg'):
             run_windows_ffmpeg_install(Path(__file__).parent)
         else:
