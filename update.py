@@ -52,6 +52,12 @@ def run_update_script():
         close_button.pack(pady=5)
         return
 
+    # Thiết lập biến môi trường để bật UTF-8 trên Windows
+    env = os.environ.copy()
+    env['PYTHONUTF8'] = '1'
+    env['PYTHONIOENCODING'] = 'utf-8'
+
+    # Thiết lập ẩn cửa sổ console trên Windows
     creation_flags = 0
     if os.name == 'nt' and hasattr(subprocess, 'CREATE_NO_WINDOW'):
         creation_flags = subprocess.CREATE_NO_WINDOW
@@ -63,7 +69,10 @@ def run_update_script():
             stderr=subprocess.STDOUT,
             bufsize=1,
             text=True,
+            encoding='utf-8',
+            errors='replace',
             cwd=script_dir,
+            env=env,
             creationflags=creation_flags
         )
     except Exception as e:
