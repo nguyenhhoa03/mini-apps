@@ -24,6 +24,8 @@ log_text.pack(fill="both", expand=True)
 # Nút Đóng
 close_button = ctk.CTkButton(app, text="Đóng", command=app.destroy)
 
+# Cờ debug để hiển thị các dòng không phải [LOG]
+debug_mode = True
 
 def append_log(message: str):
     """
@@ -39,38 +41,52 @@ def run_update_script():
     """
     Chạy file update-script.py và chỉ hiển thị các dòng log bắt đầu bằng prefix [LOG]
     """
-    # Đảm bảo chạy đúng interpreter Python trên cả Windows và Linux
     python_exec = sys.executable
     script_dir = os.path.dirname(__file__)
     script_path = os.path.join(script_dir, 'update-script.py')
 
-    # Thiết lập để không bật cửa sổ console trên Windows
+    # Kiểm tra tồn tại file
+    if not os.path.isfile(script_path):
+        append_log(f"[ERROR] Không tìm thấy file: {script_path}")
+        append_log("--- Kết thúc do lỗi ---")
+        close_button.pack(pady=5)
+        return
+
     creation_flags = 0
     if os.name == 'nt' and hasattr(subprocess, 'CREATE_NO_WINDOW'):
         creation_flags = subprocess.CREATE_NO_WINDOW
 
-    # Khởi tạo subprocess với cwd để chắc chắn tìm đúng script và môi trường
-    proc = subprocess.Popen(
-        [python_exec, script_path],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        bufsize=1,
-        text=True,
-        cwd=script_dir,
-        creationflags=creation_flags
-    )
+    try:
+        proc = subprocess.Popen(
+            [python_exec, script_path],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            bufsize=1,
+            text=True,
+            cwd=script_dir,
+            creationflags=creation_flags
+        )
+    except Exception as e:
+        append_log(f"[ERROR] Không thể chạy script: {e}")
+        append_log("--- Kết thúc do lỗi ---")
+        close_button.pack(pady=5)
+        return
 
-    # Đọc từng dòng đầu ra và chỉ hiển thị log cần thiết
+    # Đọc đầu ra của script
     for line in proc.stdout:
         line = line.rstrip()
         if line.startswith("[LOG]"):
-            message = line[6:] if len(line) > 6 else ''
+            message = line[5:].lstrip()
             append_log(message)
+        elif debug_mode:
+            # Hiển thị thêm các dòng khác để debug
+            append_log(f"[DBG] {line}")
 
     proc.stdout.close()
     proc.wait()
+    if proc.returncode != 0:
+        append_log(f"[ERROR] Script trả về mã lỗi {proc.returncode}")
     append_log("--- Hoàn tất chạy update-script.py ---")
-    # Hiển thị nút Đóng khi hoàn thành
     close_button.pack(pady=5)
 
 # Chạy trong thread để không block GUI
