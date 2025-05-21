@@ -95,7 +95,7 @@ def run_update_script():
     proc.wait()
     if proc.returncode != 0:
         append_log(f"[ERROR] Script trả về mã lỗi {proc.returncode}")
-    append_log("--- Hoàn tất chạy update-script.py ---")
+    append_log("--- Hoàn tất update, hãy khởi động lại Laucher để áp dụng thay đổi---")
     close_button.pack(pady=5)
 
 # Chạy trong thread để không block GUI
