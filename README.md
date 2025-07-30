@@ -59,8 +59,6 @@ Chi tiết xem tại [LICENSE](LICENSE).
 
 📌 **Nguồn mở trên GitHub**: [mini-apps](https://github.com/nguyenhhoa03/mini-apps)  
 
-📌 **Icons**: Cảm ơn [Lucide](https://lucide.dev/)
-
-📌 **Trình giải nén**: Cảm ơn [7-zip](https://www.7-zip.org/)
+📌 **Dự án có sử dụng**: ffpmeg, yt-dlp, 7-zip,...
 
 
