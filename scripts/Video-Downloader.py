@@ -1,10 +1,12 @@
 import os
+import sys
 import threading
 import yt_dlp
 import customtkinter as ctk
+import platform
 
 ALLOWED_VIDEO_QUALITIES = [
-    "144p", "240p", "360p", "480p", "720p", "1080p", "1440p", "2160p", "4320p"
+    "Auto", "144p", "240p", "360p", "480p", "720p", "1080p", "1440p", "2160p", "4320p"
 ]
 
 class VideoDownloaderApp:
@@ -12,6 +14,9 @@ class VideoDownloaderApp:
         self.root = root
         self.root.title("Video Downloader (Base on yt-dlp)")
         self.root.geometry("500x500")
+        
+        # Thiết lập đường dẫn ffmpeg nội bộ
+        self.setup_ffmpeg_path()
 
         # URL Entry
         self.url_label = ctk.CTkLabel(root, text="Video URL:")
@@ -51,6 +56,57 @@ class VideoDownloaderApp:
         self.download_button = ctk.CTkButton(root, text="Download", command=self.on_download_button_clicked)
         self.download_button.pack(pady=10)
 
+    def setup_ffmpeg_path(self):
+        """Thiết lập đường dẫn đến ffmpeg nội bộ"""
+        # Lấy thư mục chứa script hiện tại
+        if getattr(sys, 'frozen', False):
+            # Nếu chạy từ file exe (đã được đóng gói)
+            base_dir = os.path.dirname(sys.executable)
+        else:
+            # Nếu chạy từ script Python
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Xác định tên file ffmpeg dựa trên hệ điều hành
+        system = platform.system().lower()
+        if system == 'windows':
+            ffmpeg_name = 'ffmpeg.exe'
+            ffprobe_name = 'ffprobe.exe'
+        else:
+            ffmpeg_name = 'ffmpeg'
+            ffprobe_name = 'ffprobe'
+        
+        # Đường dẫn đến thư mục ffmpeg
+        ffmpeg_dir = os.path.join(base_dir, 'ffmpeg')
+        self.ffmpeg_path = os.path.join(ffmpeg_dir, ffmpeg_name)
+        self.ffprobe_path = os.path.join(ffmpeg_dir, ffprobe_name)
+        
+        # Kiểm tra xem ffmpeg có tồn tại không
+        if os.path.exists(self.ffmpeg_path):
+            self.log_message(f"✓ FFmpeg found: {self.ffmpeg_path}")
+            # Đặt quyền thực thi cho Linux/Mac
+            if system != 'windows':
+                try:
+                    os.chmod(self.ffmpeg_path, 0o755)
+                    os.chmod(self.ffprobe_path, 0o755)
+                except:
+                    pass
+        else:
+            self.log_message(f"⚠ FFmpeg not found at: {self.ffmpeg_path}")
+            self.log_message("Please place ffmpeg files in 'ffmpeg' folder")
+
+    def get_ydl_opts_base(self):
+        """Trả về cấu hình cơ bản cho yt-dlp với ffmpeg nội bộ"""
+        opts = {
+            'progress_hooks': [self.yt_dlp_progress],
+            'noplaylist': True
+        }
+        
+        # Nếu ffmpeg tồn tại, sử dụng đường dẫn nội bộ
+        if os.path.exists(self.ffmpeg_path):
+            opts['ffmpeg_location'] = os.path.dirname(self.ffmpeg_path)
+        
+        return opts
+
     def log_message(self, message):
         self.log_textbox.insert(ctk.END, message + '\n')
         self.log_textbox.see(ctk.END)
@@ -76,6 +132,11 @@ class VideoDownloaderApp:
             'quiet': True,
             'no_warnings': True,
         }
+        
+        # Thêm ffmpeg location nếu có
+        if os.path.exists(self.ffmpeg_path):
+            opts['ffmpeg_location'] = os.path.dirname(self.ffmpeg_path)
+        
         try:
             with yt_dlp.YoutubeDL(opts) as ydl:
                 info = ydl.extract_info(url, download=False)
@@ -99,11 +160,17 @@ class VideoDownloaderApp:
                 audio_available = True
 
         # Sắp xếp và giữ lại các chất lượng nằm trong danh sách cho phép nếu có trong video
-        video_options = [q for q in ALLOWED_VIDEO_QUALITIES if q in available_qualities]
+        video_options = [q for q in ALLOWED_VIDEO_QUALITIES if q in available_qualities or q == "Auto"]
         options = []
         if audio_available:
             options.append("Audio Only (MP3)")
-        options.extend(video_options)
+        # Thêm Auto làm tùy chọn đầu tiên nếu có video
+        if video_options and "Auto" in video_options:
+            options.append("Auto")
+            # Thêm các chất lượng cụ thể (loại bỏ Auto để không trùng)
+            options.extend([q for q in video_options if q != "Auto"])
+        else:
+            options.extend(video_options)
 
         if not options:
             self.log_message("Không tìm thấy định dạng phù hợp cho video này.")
@@ -131,6 +198,11 @@ class VideoDownloaderApp:
         if not os.path.exists(save_path):
             os.makedirs(save_path, exist_ok=True)
 
+        # Kiểm tra ffmpeg trước khi download
+        if not os.path.exists(self.ffmpeg_path):
+            self.log_message("⚠ Warning: FFmpeg not found. Some formats may not work properly.")
+            self.log_message("Please place ffmpeg.exe in 'ffmpeg' folder for full functionality.")
+
         # Start download in new thread
         threading.Thread(
             target=self.download_video,
@@ -140,38 +212,76 @@ class VideoDownloaderApp:
 
     def download_video(self, url, save_path, selected_format):
         try:
+            # Lấy cấu hình cơ bản với ffmpeg nội bộ
+            ydl_opts = self.get_ydl_opts_base()
+            ydl_opts['outtmpl'] = os.path.join(save_path, '%(title)s.%(ext)s')
+            
             # Cấu hình các tùy chọn cho yt-dlp dựa vào lựa chọn của người dùng
             if selected_format == "Audio Only (MP3)":
-                ydl_opts = {
+                ydl_opts.update({
                     'format': 'bestaudio/best',
-                    'outtmpl': os.path.join(save_path, '%(title)s.%(ext)s'),
                     'postprocessors': [{
                         'key': 'FFmpegExtractAudio',
                         'preferredcodec': 'mp3',
+                        'preferredquality': '192',
                     }],
-                    'progress_hooks': [self.yt_dlp_progress],
-                    'noplaylist': True
-                }
-            else:
-                # Với các định dạng video, sử dụng điều kiện về chiều cao, và ép merge về mp4
-                # Lấy số chiều cao từ chuỗi (ví dụ "720p" -> 720)
-                height = int(selected_format.rstrip("p"))
-                ydl_opts = {
-                    'format': f'bestvideo[height<={height}]+bestaudio[ext=m4a]/best[height<={height}]',
-                    'outtmpl': os.path.join(save_path, '%(title)s.%(ext)s'),
+                })
+                
+                # Nếu không có ffmpeg nội bộ, thử fallback
+                if not os.path.exists(self.ffmpeg_path):
+                    self.log_message("Attempting to download audio without internal FFmpeg...")
+                    ydl_opts['postprocessors'] = []
+                    ydl_opts['format'] = 'bestaudio[ext=mp3]/bestaudio'
+                    
+            elif selected_format == "Auto":
+                # Chế độ Auto: tải chất lượng tốt nhất có sẵn (như yt-dlp mặc định)
+                ydl_opts.update({
+                    'format': 'best[ext=mp4]/best',
                     'merge_output_format': 'mp4',
-                    'progress_hooks': [self.yt_dlp_progress],
-                    'noplaylist': True
-                }
+                })
+                
+                # Thêm postprocessor nếu có ffmpeg
+                if os.path.exists(self.ffmpeg_path):
+                    ydl_opts['postprocessors'] = [{
+                        'key': 'FFmpegVideoConvertor',
+                        'preferedformat': 'mp4',
+                    }]
+                    
+                self.log_message("Auto mode: Downloading best quality available")
+                    
+            else:
+                # Với các định dạng video cụ thể, sử dụng điều kiện về chiều cao
+                height = int(selected_format.rstrip("p"))
+                ydl_opts.update({
+                    'format': f'bestvideo[height<={height}]+bestaudio[ext=m4a]/best[height<={height}]',
+                    'merge_output_format': 'mp4',
+                })
+                
+                # Nếu có ffmpeg nội bộ, thêm postprocessor để đảm bảo chất lượng
+                if os.path.exists(self.ffmpeg_path):
+                    ydl_opts['postprocessors'] = [{
+                        'key': 'FFmpegVideoConvertor',
+                        'preferedformat': 'mp4',
+                    }]
 
+            self.log_message(f"Starting download with format: {selected_format}")
+            
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info_dict = ydl.extract_info(url, download=True)
                 video_title = info_dict.get('title', 'Unknown Title')
 
-            self.log_message(f"Downloaded successfully: {video_title}")
+            self.log_message(f"✓ Downloaded successfully: {video_title}")
             self.update_progress(1.0, "Download Complete!")
+            
         except Exception as e:
-            self.log_message(f"Error: {str(e)}")
+            error_msg = str(e)
+            self.log_message(f"✗ Error: {error_msg}")
+            
+            # Gợi ý nếu lỗi liên quan đến ffmpeg
+            if 'ffmpeg' in error_msg.lower() or 'postprocess' in error_msg.lower():
+                self.log_message("💡 Tip: Make sure ffmpeg files are in 'ffmpeg' folder")
+                self.log_message("   Download from: https://ffmpeg.org/download.html")
+                
             self.update_progress(0, "Download Failed")
 
     def yt_dlp_progress(self, d):
@@ -180,12 +290,35 @@ class VideoDownloaderApp:
             total = d.get('total_bytes') or d.get('total_bytes_estimate', 0)
             if total > 0:
                 progress = downloaded / total
-                status = f"Downloading: {progress*100:.1f}%"
+                speed = d.get('speed', 0)
+                speed_str = f" ({speed/1024/1024:.1f} MB/s)" if speed else ""
+                status = f"Downloading: {progress*100:.1f}%{speed_str}"
                 self.update_progress(progress, status)
         elif d['status'] == 'finished':
-            self.update_progress(1.0, "Processing...")
+            self.update_progress(0.9, "Processing...")
+        elif d['status'] == 'error':
+            self.update_progress(0, "Error occurred")
+
+def create_ffmpeg_structure():
+    """Tạo cấu trúc thư mục cho ffmpeg nếu chưa có"""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    ffmpeg_dir = os.path.join(script_dir, 'ffmpeg')
+    
+    if not os.path.exists(ffmpeg_dir):
+        os.makedirs(ffmpeg_dir)
+        print(f"Created ffmpeg directory: {ffmpeg_dir}")
+        print("Please place ffmpeg executable files in this directory:")
+        if platform.system().lower() == 'windows':
+            print("  - ffmpeg.exe")
+            print("  - ffprobe.exe")
+        else:
+            print("  - ffmpeg")
+            print("  - ffprobe")
 
 if __name__ == "__main__":
+    # Tạo cấu trúc thư mục ffmpeg nếu cần
+    create_ffmpeg_structure()
+    
     ctk.set_appearance_mode("System")
     ctk.set_default_color_theme("blue")
 
