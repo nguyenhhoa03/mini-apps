@@ -1,0 +1,8 @@
+This is a placeholder for ffprobe.exe
+
+The actual ffprobe binary is not included in this repository due to size limits.
+
+Please download ffmpeg for Windows (which includes ffprobe) from:
+https://www.gyan.dev/ffmpeg/builds/
+
+After downloading, copy `ffprobe.exe` into this folder and rename this file if needed.
