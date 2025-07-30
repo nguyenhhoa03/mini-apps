@@ -1,6 +1,6 @@
 # 🚀 Mini apps laucher  
 
-Mini apps Launcher là một trình khởi chạy các tiện ích trên Windows và Linux.  
+Mini apps Launcher là một trình khởi chạy các tiện ích.
 Với giao diện trực quan, bạn có thể tìm kiếm ứng dụng nhanh chóng và cập nhật phần mềm chỉ với một cú nhấp chuột.  
 
 ## 🖼️ Giao diện ứng dụng  
