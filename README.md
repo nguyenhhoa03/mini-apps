@@ -56,11 +56,11 @@ Dự án này được phát hành theo **GNU General Public License v3.0**.
 Chi tiết xem tại [LICENSE](LICENSE).  
 
 📌 **Tác giả**: [Xem profile tại đây](https://github.com/nguyenhhoa03)  
+
 📌 **Nguồn mở trên GitHub**: [mini-apps](https://github.com/nguyenhhoa03/mini-apps)  
+
 📌 **Icons**: Cảm ơn [Lucide](https://lucide.dev/)
 
 📌 **Trình giải nén**: Cảm ơn [7-zip](https://www.7-zip.org/)
-<p align="center">
-  Copyright (C) 2025 <a href="https://github.com/nguyenhhoa03/">nguyenhhoa03</a>
-</p>
+
 
